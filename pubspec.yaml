@@ -1,0 +1,48 @@
+name: ferme_ecoles
+description: "Application mobile et web d'achat/vente de produits agroécologiques et bio."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+  # Gestion d'état
+  provider: ^6.1.2
+
+  # Réseau / API Django REST
+  http: ^1.2.1
+  dio: ^5.4.3+1
+
+  # Images (produits, avatars)
+  cached_network_image: ^3.3.1
+
+  # Stockage local (token JWT, préférences)
+  shared_preferences: ^2.2.3
+  flutter_secure_storage: ^9.2.2
+
+  # UI
+  google_fonts: ^6.2.1
+  flutter_svg: ^2.0.10+1
+  shimmer: ^3.0.0
+  smooth_page_indicator: ^1.1.0
+  badges: ^3.1.2
+
+  # Utilitaires
+  intl: ^0.19.0
+  equatable: ^2.0.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
