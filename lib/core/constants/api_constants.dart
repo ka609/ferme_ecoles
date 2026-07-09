@@ -1,39 +1,87 @@
-/// Centralise les URLs de l'API Django REST Framework.
-/// Adapte [baseUrl] selon l'environnement (émulateur Android, web, prod...).
 class ApiConstants {
   ApiConstants._();
 
-  // Emulateur Android : 10.0.2.2 pointe vers le localhost de la machine hôte.
-  // Sur le web / iOS simulator, utilise plutôt 127.0.0.1 ou l'URL de prod.
-  static const String baseUrl = 'http://127.0.0.1:8000/api';
+  static const String baseUrl = "http://127.0.0.1:8000/api";
 
-  // Auth
-  static const String login = '$baseUrl/auth/login/';
-  static const String refreshToken = '$baseUrl/auth/refresh/';
-  static const String register = '$baseUrl/auth/register/';
+  static const String register = "/auth/register/";
+  static const String login = "/auth/login/";
+  static const String profile = "/auth/me/";
 
-  // Catalogue
-  static const String products = '$baseUrl/products/';
-  static const String categories = '$baseUrl/categories/';
+  static const String utilisateurs = "/utilisateurs/";
+  static const String producteurs = "/producteurs/";
+  static const String notifications = "/notifications/";
+  static const String journalActivites = "/journal-activites/";
+  static const String parametres = "/parametres/";
 
-  // Panier
-  static const String carts = '$baseUrl/carts/';
-  static const String cartItems = '$baseUrl/cart-items/';
+  static const String categories = "/categories/";
+  static const String produits = "/produits/";
+  static const String certifications = "/certifications/";
+  static const String produitImages = "/produit-images/";
+  static const String catalogue = "/produits/catalogue/";
+  static const String mesProduits = "/produits/mes_produits/";
 
-  // Commandes
-  static const String orders = '$baseUrl/orders/';
-  static const String payments = '$baseUrl/payments/';
-  static const String deliveries = '$baseUrl/deliveries/';
+  static const String paniers = "/paniers/";
+  static const String panierArticles = "/panier-articles/";
+  static const String ajouterPanier = "/paniers/ajouter/";
 
-  // Notifications
-  static const String notifications = '$baseUrl/notifications/';
+  static const String commandes = "/commandes/";
 
-  // Producteur
-  static const String productions = '$baseUrl/productions/';
+  static const String paiements = "/paiements/";
 
-  // Utilisateur
-  static const String users = '$baseUrl/users/';
+  static const String versements = "/versements/";
 
-  static String productDetail(int id) => '$products$id/';
-  static String categoryProducts(int categoryId) => '$products?category=$categoryId';
+  static const String livraisons = "/livraisons/";
+
+  static const String commissions = "/commissions/";
+
+  static const String societesLivraison = "/societes-livraison/";
+
+  static const String avis = "/avis/";
+
+  static const String sujetsForum = "/sujets-forum/";
+
+  static const String reponsesForum = "/reponses-forum/";
+
+  static const String formations = "/formations/";
+
+  static const String suivisFormations = "/suivis-formations/";
+
+  static const String mediaUrl = "http://127.0.0.1:8000";
+
+  static String detail(
+    String endpoint,
+    int id,
+  ) {
+    return "$endpoint$id/";
+  }
+
+  static const String livraisonsDisponibles =
+    "/livraisons/disponibles/";
+
+  static String prendreLivraison(
+    int id,
+  ) {
+    return "${livraisons}$id/prendre/";
+  }
+
+  static String relacherLivraison(
+    int id,
+  ) {
+    return "${livraisons}$id/relacher/";
+  }
+
+  static String livrerLivraison(
+    int id,
+  ) {
+    return "${livraisons}$id/livrer/";
+  }
+static String notificationRead(int id){
+  return "${notifications}$id/read/";
+} 
+
+  static String confirmerReception(
+    int id,
+  ) {
+    return "${livraisons}$id/confirmer_reception/";
+  }
 }
