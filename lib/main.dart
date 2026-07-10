@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'core/theme/app_theme.dart';
 
 import 'providers/auth_provider.dart';
 
@@ -25,27 +26,31 @@ import 'providers/societe_livraison_provider.dart';
 import 'providers/suivi_formation_provider.dart';
 import 'providers/sujet_forum_provider.dart';
 import 'providers/versement_provider.dart';
+import 'providers/statistique_provider.dart';
 
 import 'core/routes/app_route.dart';
 
-
-
 void main() {
 
+  final authProvider = AuthProvider();
+
   runApp(
-    const FermeEcoleApp(),
+    FermeEcoleApp(
+      authProvider: authProvider,
+    ),
   );
 
 }
 
 
-
 class FermeEcoleApp extends StatelessWidget {
+
+  final AuthProvider authProvider;
 
   const FermeEcoleApp({
     super.key,
+    required this.authProvider,
   });
-
 
 
   @override
@@ -55,16 +60,11 @@ class FermeEcoleApp extends StatelessWidget {
 
       providers: [
 
-
-        // Authentification
-        ChangeNotifierProvider(
-          create: (_) => AuthProvider(),
+        ChangeNotifierProvider.value(
+          value: authProvider,
         ),
 
 
-
-
-        // Catalogue
         ChangeNotifierProvider(
           create: (_) => CatalogProvider(),
         ),
@@ -86,8 +86,6 @@ class FermeEcoleApp extends StatelessWidget {
         ),
 
 
-
-        // Commandes
         ChangeNotifierProvider(
           create: (_) => PanierProvider(),
         ),
@@ -101,8 +99,6 @@ class FermeEcoleApp extends StatelessWidget {
         ),
 
 
-
-        // Livraison
         ChangeNotifierProvider(
           create: (_) => LivraisonProvider(),
         ),
@@ -116,8 +112,6 @@ class FermeEcoleApp extends StatelessWidget {
         ),
 
 
-
-        // Communauté
         ChangeNotifierProvider(
           create: (_) => AvisProvider(),
         ),
@@ -131,8 +125,6 @@ class FermeEcoleApp extends StatelessWidget {
         ),
 
 
-
-        // Formation
         ChangeNotifierProvider(
           create: (_) => FormationProvider(),
         ),
@@ -142,8 +134,6 @@ class FermeEcoleApp extends StatelessWidget {
         ),
 
 
-
-        // Administration
         ChangeNotifierProvider(
           create: (_) => ProducteurProvider(),
         ),
@@ -164,6 +154,10 @@ class FermeEcoleApp extends StatelessWidget {
           create: (_) => VersementProvider(),
         ),
 
+        ChangeNotifierProvider(
+      create: (_) => StatistiqueProvider(),
+    ),
+
       ],
 
 
@@ -172,8 +166,11 @@ class FermeEcoleApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
 
         title: "Ferme École Intégrée",
+        theme: AppTheme.light,
 
-        routerConfig: appRouter,
+        routerConfig: createRouter(
+          authProvider,
+        ),
 
       ),
 

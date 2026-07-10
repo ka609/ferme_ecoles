@@ -55,6 +55,9 @@ class ApiConstants {
     return "$endpoint$id/";
   }
 
+  static const String statistiqueProducteur =
+    "/producteur/statistiques/";
+
   static const String livraisonsDisponibles =
     "/livraisons/disponibles/";
 

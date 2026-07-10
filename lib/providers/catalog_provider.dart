@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 
+import '../models/categorie_model.dart';
+import '../models/produit_model.dart';
 import '../services/catalog_service.dart';
+
 
 
 class CatalogProvider extends ChangeNotifier {
@@ -8,11 +11,11 @@ class CatalogProvider extends ChangeNotifier {
   final CatalogService _service = CatalogService();
 
 
-  List<dynamic> _categories = [];
+  List<Categorie> _categories = [];
 
-  List<dynamic> _produits = [];
+  List<Produit> _produits = [];
 
-  Map<String, dynamic>? _produitDetail;
+  Produit? _produitDetail;
 
 
   bool _isLoading = false;
@@ -21,11 +24,11 @@ class CatalogProvider extends ChangeNotifier {
 
 
 
-  List<dynamic> get categories => _categories;
+  List<Categorie> get categories => _categories;
 
-  List<dynamic> get produits => _produits;
+  List<Produit> get produits => _produits;
 
-  Map<String, dynamic>? get produitDetail => _produitDetail;
+  Produit? get produitDetail => _produitDetail;
 
 
   bool get isLoading => _isLoading;
@@ -110,9 +113,7 @@ class CatalogProvider extends ChangeNotifier {
 
   // Charge détail produit
   Future<void> fetchProduitDetail(
-
-    int produitId
-
+    int produitId,
   ) async {
 
     try {
@@ -120,11 +121,10 @@ class CatalogProvider extends ChangeNotifier {
       _setLoading(true);
 
 
-      _produitDetail = await _service.fetchProduitDetail(
-
-        produitId,
-
-      );
+      _produitDetail =
+          await _service.fetchProduitDetail(
+            produitId,
+          );
 
 
       _error = null;

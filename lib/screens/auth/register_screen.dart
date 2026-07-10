@@ -17,6 +17,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _usernameController = TextEditingController();
+  final _nomController = TextEditingController();
+  final _prenomController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -28,7 +30,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   void dispose() {
+
     _usernameController.dispose();
+    _nomController.dispose();
+    _prenomController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -45,22 +50,45 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
 
-    final data = {
-      "username": _usernameController.text.trim(),
-      "email": _emailController.text.trim(),
-      "password": _passwordController.text.trim(),
-      "telephone": _telephoneController.text.trim(),
-      "role": _role,
+    final data = <String, dynamic>{
+
+      "username":
+          _usernameController.text.trim(),
+
+      "nom":
+          _nomController.text.trim(),
+
+      "prenom":
+          _prenomController.text.trim(),
+
+      "email":
+          _emailController.text.trim(),
+
+      "password":
+          _passwordController.text.trim(),
+
+      "password_confirmation":
+          _confirmPasswordController.text.trim(),
+
+      "telephone":
+          _telephoneController.text.trim(),
+
+      "role":
+          _role,
     };
 
 
     if (_role == "CLIENT") {
+
       data["type_client"] = _typeClient;
+
     }
 
 
     final success =
-        await context.read<AuthProvider>().register(data);
+        await context.read<AuthProvider>().register(
+          data,
+        );
 
 
     if (!mounted) return;
@@ -70,11 +98,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Compte créé avec succès"),
+          content: Text(
+            "Compte créé avec succès",
+          ),
         ),
       );
 
-      Navigator.pop(context);
+      // Pas de navigation manuelle ici : AuthProvider.register()
+      // connecte automatiquement l'utilisateur, et le GoRouter
+      // (via refreshListenable) redirige automatiquement selon le rôle.
 
     } else {
 
@@ -94,24 +126,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
 
     return Scaffold(
+
       appBar: AppBar(
-        title: const Text("Créer un compte"),
+        title: const Text(
+          "Créer un compte",
+        ),
       ),
 
+
       body: SafeArea(
+
         child: SingleChildScrollView(
+
           padding: const EdgeInsets.all(24),
 
           child: Form(
+
             key: _formKey,
 
             child: Column(
+
               crossAxisAlignment:
                   CrossAxisAlignment.stretch,
 
               children: [
 
                 DropdownButtonFormField<String>(
+
                   value: _role,
 
                   decoration: const InputDecoration(
@@ -120,6 +161,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
 
                   items: const [
+
                     DropdownMenuItem(
                       value: "CLIENT",
                       child: Text("Client"),
@@ -129,18 +171,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       value: "LIVREUR",
                       child: Text("Livreur"),
                     ),
+
                   ],
 
                   onChanged: (value) {
+
                     setState(() {
+
                       _role = value!;
+
                     });
+
                   },
                 ),
 
+
                 const SizedBox(height: 16),
 
+
                 TextFormField(
+
                   controller: _usernameController,
 
                   decoration: const InputDecoration(
@@ -149,18 +199,76 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
 
                   validator: (value) {
+
                     if (value == null ||
                         value.isEmpty) {
+
                       return "Champ obligatoire";
+
                     }
 
                     return null;
                   },
                 ),
 
+
                 const SizedBox(height: 16),
 
+
                 TextFormField(
+
+                  controller: _nomController,
+
+                  decoration: const InputDecoration(
+                    labelText: "Nom",
+                    border: OutlineInputBorder(),
+                  ),
+
+                  validator: (value) {
+
+                    if (value == null ||
+                        value.isEmpty) {
+
+                      return "Champ obligatoire";
+
+                    }
+
+                    return null;
+                  },
+                ),
+
+
+                const SizedBox(height: 16),
+
+
+                TextFormField(
+
+                  controller: _prenomController,
+
+                  decoration: const InputDecoration(
+                    labelText: "Prénom",
+                    border: OutlineInputBorder(),
+                  ),
+
+                  validator: (value) {
+
+                    if (value == null ||
+                        value.isEmpty) {
+
+                      return "Champ obligatoire";
+
+                    }
+
+                    return null;
+                  },
+                ),
+
+
+                const SizedBox(height: 16),
+
+
+                TextFormField(
+
                   controller: _emailController,
 
                   keyboardType:
@@ -172,9 +280,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
 
+
                 const SizedBox(height: 16),
 
+
                 TextFormField(
+
                   controller: _telephoneController,
 
                   keyboardType:
@@ -186,9 +297,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
 
+
                 const SizedBox(height: 16),
 
+
                 TextFormField(
+
                   controller: _passwordController,
 
                   obscureText: true,
@@ -199,19 +313,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
 
                   validator: (value) {
+
                     if (value == null ||
-                        value.length < 6) {
-                      return "Minimum 6 caractères";
+                        value.length < 8) {
+
+                      return "Minimum 8 caractères";
+
                     }
 
                     return null;
                   },
                 ),
 
+
                 const SizedBox(height: 16),
 
+
                 TextFormField(
-                  controller: _confirmPasswordController,
+
+                  controller:
+                      _confirmPasswordController,
 
                   obscureText: true,
 
@@ -224,12 +345,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     if (value == null ||
                         value.isEmpty) {
+
                       return "Confirmation obligatoire";
+
                     }
+
 
                     if (value !=
                         _passwordController.text) {
+
                       return "Les mots de passe ne correspondent pas";
+
                     }
 
                     return null;
@@ -241,7 +367,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                   const SizedBox(height: 16),
 
+
                   DropdownButtonFormField<String>(
+
                     value: _typeClient,
 
                     decoration: const InputDecoration(
@@ -253,25 +381,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                       DropdownMenuItem(
                         value: "RESTAURANT",
-                        child: Text("Restaurant"),
+                        child: Text(
+                          "Restaurant",
+                        ),
                       ),
 
                       DropdownMenuItem(
                         value: "REVENDEUR",
-                        child:
-                            Text("Revendeur / Transformateur"),
+                        child: Text(
+                          "Revendeur / Transformateur",
+                        ),
                       ),
 
                       DropdownMenuItem(
                         value: "AUTRE",
-                        child: Text("Autre"),
+                        child: Text(
+                          "Autre",
+                        ),
                       ),
+
                     ],
 
                     onChanged: (value) {
+
                       setState(() {
+
                         _typeClient = value!;
+
                       });
+
                     },
                   ),
                 ],
@@ -279,30 +417,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                 const SizedBox(height: 24),
 
+
                 Consumer<AuthProvider>(
+
                   builder: (context, auth, child) {
 
                     return ElevatedButton(
+
                       onPressed:
                           auth.isLoading
                               ? null
                               : _register,
 
-                      child: auth.isLoading
+                      child:
+                          auth.isLoading
 
-                          ? const SizedBox(
-                              height: 22,
-                              width: 22,
+                              ? const SizedBox(
+                                  height: 22,
+                                  width: 22,
+                                  child:
+                                      CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
 
-                              child:
-                                  CircularProgressIndicator(
-                                strokeWidth: 2,
-                              ),
-                            )
-
-                          : const Text(
-                              "Créer le compte",
-                            ),
+                              : const Text(
+                                  "Créer le compte",
+                                ),
                     );
                   },
                 ),

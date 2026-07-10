@@ -15,7 +15,8 @@ class CatalogScreen extends StatefulWidget {
   const CatalogScreen({super.key});
 
   @override
-  State<CatalogScreen> createState() => _CatalogScreenState();
+  State<CatalogScreen> createState() =>
+      _CatalogScreenState();
 }
 
 
@@ -28,11 +29,20 @@ class _CatalogScreenState extends State<CatalogScreen> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<CatalogProvider>().fetchProduits();
-      context.read<CategorieProvider>().fetchCategories();
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) {
+
+      context
+          .read<CatalogProvider>()
+          .fetchProduits();
+
+      context
+          .read<CategorieProvider>()
+          .fetchCategories();
+
     });
   }
+
 
 
   void _changePage(int index) {
@@ -42,21 +52,26 @@ class _CatalogScreenState extends State<CatalogScreen> {
     });
 
 
-    switch (index) {
+    switch(index) {
 
       case 1:
-        context.push("/commandes");
+        context.go("/commandes");
         break;
+
 
       case 2:
-        context.push("/livraisons");
+        context.go("/livraisons");
         break;
 
+
       case 3:
-        context.push("/profile");
+        context.go("/profile");
         break;
+
     }
+
   }
+
 
 
   @override
@@ -79,7 +94,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
             ),
 
             onPressed: () {
-              context.push("/notifications");
+              context.go("/notifications");
             },
           ),
 
@@ -90,7 +105,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
             ),
 
             onPressed: () {
-              context.push("/forum");
+              context.go("/forum");
             },
           ),
 
@@ -101,11 +116,14 @@ class _CatalogScreenState extends State<CatalogScreen> {
             ),
 
             onPressed: () {
-              context.push("/panier");
+              context.go("/panier");
             },
           ),
+
         ],
+
       ),
+
 
 
       body: SafeArea(
@@ -113,15 +131,22 @@ class _CatalogScreenState extends State<CatalogScreen> {
         child: RefreshIndicator(
 
           onRefresh: () async {
+
             await context
                 .read<CatalogProvider>()
                 .fetchProduits();
+
           },
 
 
           child: CustomScrollView(
 
+            physics:
+                const AlwaysScrollableScrollPhysics(),
+
+
             slivers: [
+
 
               // Recherche
               SliverPadding(
@@ -130,11 +155,14 @@ class _CatalogScreenState extends State<CatalogScreen> {
                     const EdgeInsets.all(16),
 
 
-                sliver: SliverToBoxAdapter(
+                sliver:
+                    SliverToBoxAdapter(
 
-                  child: TextField(
+                  child:
+                      TextField(
 
-                    decoration: InputDecoration(
+                    decoration:
+                        InputDecoration(
 
                       hintText:
                           "Rechercher un produit",
@@ -153,11 +181,17 @@ class _CatalogScreenState extends State<CatalogScreen> {
                             BorderRadius.circular(
                               12,
                             ),
+
                       ),
+
                     ),
+
                   ),
+
                 ),
+
               ),
+
 
 
 
@@ -170,7 +204,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
                     ),
 
 
-                sliver: SliverToBoxAdapter(
+                sliver:
+                    SliverToBoxAdapter(
 
                   child:
                       Consumer<CategorieProvider>(
@@ -179,8 +214,12 @@ class _CatalogScreenState extends State<CatalogScreen> {
                         (context, provider, child) {
 
 
-                      if (provider.categories.isEmpty) {
-                        return const SizedBox();
+                      if(provider.categories.isEmpty) {
+
+                        return const SizedBox(
+                          height:1
+                        );
+
                       }
 
 
@@ -189,7 +228,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
                         height: 90,
 
 
-                        child: ListView.builder(
+                        child:
+                            ListView.builder(
 
                           scrollDirection:
                               Axis.horizontal,
@@ -202,69 +242,102 @@ class _CatalogScreenState extends State<CatalogScreen> {
                           itemBuilder:
                               (context, index) {
 
+
                             return CategorieCard(
+
                               categorie:
                                   provider.categories[index],
+
                             );
+
                           },
+
                         ),
+
                       );
+
                     },
+
                   ),
+
                 ),
+
               ),
 
 
 
+
               // Produits
-              SliverPadding(
+              Consumer<CatalogProvider>(
 
-                padding:
-                    const EdgeInsets.all(16),
-
-
-                sliver:
-                    Consumer<CatalogProvider>(
-
-                  builder:
-                      (context, provider, child) {
+                builder:
+                    (context, provider, child) {
 
 
-                    if (provider.isLoading) {
+                  if(provider.isLoading) {
 
-                      return const SliverToBoxAdapter(
+                    return const SliverToBoxAdapter(
+
+                      child:
+                          Center(
+
                         child:
-                            Center(
-                          child:
-                              CircularProgressIndicator(),
-                        ),
-                      );
-                    }
+                            CircularProgressIndicator(),
+
+                      ),
+
+                    );
+
+                  }
 
 
-                    if (provider.produits.isEmpty) {
 
-                      return const SliverToBoxAdapter(
+                  if(provider.produits.isEmpty) {
+
+                    return const SliverToBoxAdapter(
+
+                      child:
+                          Center(
+
                         child:
-                            Center(
+                            Padding(
+
+                          padding:
+                              EdgeInsets.all(20),
+
                           child:
                               Text(
-                            "Aucun produit disponible",
-                          ),
+                                "Aucun produit disponible",
+                              ),
+
                         ),
-                      );
-                    }
+
+                      ),
+
+                    );
+
+                  }
 
 
-                    return SliverGrid(
+
+                  return SliverPadding(
+
+                    padding:
+                        const EdgeInsets.all(16),
+
+
+                    sliver:
+                        SliverGrid(
 
                       delegate:
                           SliverChildBuilderDelegate(
 
                         (context, index) {
 
-                          Produit produit =
+
+                          final Produit produit =
                               provider.produits[index];
+
 
 
                           return ProduitCard(
@@ -275,39 +348,67 @@ class _CatalogScreenState extends State<CatalogScreen> {
 
                             onTap: () {
 
-                              context.push(
+                              context.go(
+
                                 "/produit/${produit.id}",
-                                extra: produit,
+
+                                extra:
+                                    produit,
+
                               );
+
                             },
+
                           );
+
                         },
 
 
                         childCount:
                             provider.produits.length,
+
                       ),
+
 
 
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
 
-                        crossAxisCount: 2,
+                        crossAxisCount:
+                            2,
 
-                        crossAxisSpacing: 12,
 
-                        mainAxisSpacing: 12,
+                        crossAxisSpacing:
+                            12,
 
-                        childAspectRatio: 0.70,
+
+                        mainAxisSpacing:
+                            12,
+
+
+                        childAspectRatio:
+                            0.70,
+
                       ),
-                    );
-                  },
-                ),
+
+                    ),
+
+                  );
+
+                },
+
               ),
+
+
             ],
+
           ),
+
         ),
+
       ),
+
+
 
 
       bottomNavigationBar:
@@ -328,37 +429,62 @@ class _CatalogScreenState extends State<CatalogScreen> {
         items: const [
 
           BottomNavigationBarItem(
+
             icon:
-                Icon(Icons.storefront_outlined),
+                Icon(
+                  Icons.storefront_outlined,
+                ),
+
             label:
                 "Catalogue",
+
           ),
 
 
           BottomNavigationBarItem(
+
             icon:
-                Icon(Icons.receipt_long_outlined),
+                Icon(
+                  Icons.receipt_long_outlined,
+                ),
+
             label:
                 "Commandes",
+
           ),
 
 
           BottomNavigationBarItem(
+
             icon:
-                Icon(Icons.local_shipping_outlined),
+                Icon(
+                  Icons.local_shipping_outlined,
+                ),
+
             label:
                 "Livraison",
+
           ),
 
 
           BottomNavigationBarItem(
+
             icon:
-                Icon(Icons.person_outline),
+                Icon(
+                  Icons.person_outline,
+                ),
+
             label:
                 "Compte",
+
           ),
+
         ],
+
       ),
+
     );
+
   }
+
 }

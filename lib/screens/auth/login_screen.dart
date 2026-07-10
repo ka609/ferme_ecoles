@@ -213,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextButton(
 
                   onPressed: () {
-                    context.push('/register');
+                    context.go('/register');
                   },
                   child: const Text(
                     "Créer un compte",

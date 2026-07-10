@@ -34,6 +34,8 @@ class AuthProvider extends ChangeNotifier {
 
     _setLoading(true);
 
+    debugPrint("LOGIN : $username");
+
 
     try {
 
@@ -43,14 +45,25 @@ class AuthProvider extends ChangeNotifier {
       );
 
 
+      debugPrint("LOGIN RESPONSE : $data");
+
+
       await TokenManager.saveTokens(
         access: data["access"],
         refresh: data["refresh"],
       );
 
 
+      debugPrint("TOKEN ENREGISTRE");
+
+
       _user = Utilisateur.fromJson(
         data["user"],
+      );
+
+
+      debugPrint(
+        "UTILISATEUR CONNECTE : ${_user?.username}",
       );
 
 
@@ -62,6 +75,11 @@ class AuthProvider extends ChangeNotifier {
 
 
     } catch (e) {
+
+      debugPrint(
+        "LOGIN ERROR : $e",
+      );
+
 
       _error = e.toString();
 
@@ -87,21 +105,57 @@ class AuthProvider extends ChangeNotifier {
     _setLoading(true);
 
 
+    debugPrint(
+      "REGISTER DATA : $data",
+    );
+
+
     try {
 
-      await _service.register(
-        data,
+      final response =
+          await _service.register(
+            data,
+          );
+
+
+      debugPrint(
+        "REGISTER RESPONSE : $response",
       );
 
 
       _error = null;
 
-      notifyListeners();
 
-      return true;
+      // Connexion automatique après inscription réussie
+      // pour permettre la redirection selon le rôle (GoRouter)
+
+      final username =
+          data["username"] as String;
+
+      final password =
+          data["password"] as String;
+
+
+      final loginSuccess = await login(
+        username,
+        password,
+      );
+
+
+      debugPrint(
+        "AUTO-LOGIN APRES REGISTER : $loginSuccess",
+      );
+
+
+      return loginSuccess;
 
 
     } catch (e) {
+
+      debugPrint(
+        "REGISTER ERROR : $e",
+      );
+
 
       _error = e.toString();
 
@@ -122,13 +176,29 @@ class AuthProvider extends ChangeNotifier {
   // Chargement profil connecté
   Future<void> loadUser() async {
 
+    debugPrint(
+      "CHARGEMENT PROFIL",
+    );
+
+
     try {
 
-      final data = await _service.fetchMe();
+      final data =
+          await _service.fetchMe();
+
+
+      debugPrint(
+        "PROFILE RESPONSE : $data",
+      );
 
 
       _user = Utilisateur.fromJson(
         data,
+      );
+
+
+      debugPrint(
+        "USER ACTUEL : ${_user?.username}",
       );
 
 
@@ -137,7 +207,12 @@ class AuthProvider extends ChangeNotifier {
 
     } catch (e) {
 
-      logout();
+      debugPrint(
+        "PROFILE ERROR : $e",
+      );
+
+
+      await logout();
 
     }
 
@@ -147,6 +222,11 @@ class AuthProvider extends ChangeNotifier {
 
   // Déconnexion
   Future<void> logout() async {
+
+    debugPrint(
+      "DECONNEXION",
+    );
+
 
     await TokenManager.clearTokens();
 
@@ -161,7 +241,7 @@ class AuthProvider extends ChangeNotifier {
 
   // Mise à jour état chargement
   void _setLoading(
-    bool value
+    bool value,
   ){
 
     _isLoading = value;

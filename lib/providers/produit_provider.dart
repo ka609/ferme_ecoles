@@ -1,21 +1,21 @@
 import 'package:flutter/foundation.dart';
 
+import '../models/produit_model.dart';
 import '../services/produit_service.dart';
 
 
 class ProduitProvider extends ChangeNotifier {
 
-  final ProduitService _service =
-      ProduitService();
+  final ProduitService _service = ProduitService();
 
 
 
-  List<dynamic> _catalogue = [];
+  List<Produit> _catalogue = [];
 
-  List<dynamic> _mesProduits = [];
+  List<Produit> _mesProduits = [];
 
 
-  Map<String,dynamic>? _produitDetail;
+  Produit? _produitDetail;
 
 
   bool _isLoading = false;
@@ -24,24 +24,19 @@ class ProduitProvider extends ChangeNotifier {
 
 
 
-  List<dynamic> get catalogue =>
-      _catalogue;
+  List<Produit> get catalogue => _catalogue;
 
 
-  List<dynamic> get mesProduits =>
-      _mesProduits;
+  List<Produit> get mesProduits => _mesProduits;
 
 
-  Map<String,dynamic>? get produitDetail =>
-      _produitDetail;
+  Produit? get produitDetail => _produitDetail;
 
 
-  bool get isLoading =>
-      _isLoading;
+  bool get isLoading => _isLoading;
 
 
-  String? get error =>
-      _error;
+  String? get error => _error;
 
 
 
@@ -54,7 +49,14 @@ class ProduitProvider extends ChangeNotifier {
 
 
       _catalogue =
-          await _service.fetchCatalogue();
+          await _service.fetchCatalogue()
+              .then(
+                (data) => data
+                    .map(
+                      (e) => Produit.fromJson(e),
+                    )
+                    .toList(),
+              );
 
 
       _error = null;
@@ -84,7 +86,14 @@ class ProduitProvider extends ChangeNotifier {
 
 
       _mesProduits =
-          await _service.fetchMesProduits();
+          await _service.fetchMesProduits()
+              .then(
+                (data) => data
+                    .map(
+                      (e) => Produit.fromJson(e),
+                    )
+                    .toList(),
+              );
 
 
       _error = null;
@@ -115,10 +124,14 @@ class ProduitProvider extends ChangeNotifier {
       _setLoading(true);
 
 
-      _produitDetail =
+      final data =
           await _service.fetchProduitDetail(
             produitId,
           );
+
+
+      _produitDetail =
+          Produit.fromJson(data);
 
 
       _error = null;
@@ -150,7 +163,7 @@ class ProduitProvider extends ChangeNotifier {
 
     try {
 
-      final produit =
+      final data =
           await _service.createProduit(
             nom: nom,
             description: description,
@@ -161,7 +174,7 @@ class ProduitProvider extends ChangeNotifier {
 
 
       _mesProduits.add(
-        produit,
+        Produit.fromJson(data),
       );
 
 
@@ -191,17 +204,20 @@ class ProduitProvider extends ChangeNotifier {
 
     try {
 
-      final produit =
+      final response =
           await _service.updateProduit(
             produitId: produitId,
             data: data,
           );
 
 
+      final produit =
+          Produit.fromJson(response);
+
+
       final index =
           _mesProduits.indexWhere(
-            (item) =>
-                item["id"] == produitId,
+            (item) => item.id == produitId,
           );
 
 
@@ -246,8 +262,7 @@ class ProduitProvider extends ChangeNotifier {
 
 
       _mesProduits.removeWhere(
-        (item) =>
-            item["id"] == produitId,
+        (item) => item.id == produitId,
       );
 
 
@@ -270,9 +285,7 @@ class ProduitProvider extends ChangeNotifier {
 
 
   // Mise à jour chargement
-  void _setLoading(
-    bool value,
-  ){
+  void _setLoading(bool value){
 
     _isLoading = value;
 

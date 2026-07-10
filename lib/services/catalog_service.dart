@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 
 import '../core/constants/api_constants.dart';
+import '../models/categorie_model.dart';
+import '../models/produit_model.dart';
 import 'api_service.dart';
 
 
@@ -10,7 +12,7 @@ class CatalogService {
 
 
   // Récupère les catégories publiques
-  Future<List<dynamic>> fetchCategories() async {
+  Future<List<Categorie>> fetchCategories() async {
 
     try {
 
@@ -18,19 +20,26 @@ class CatalogService {
         ApiConstants.categories,
       );
 
-      return response.data as List<dynamic>;
+
+      return (response.data as List)
+          .map(
+            (json) => Categorie.fromJson(json),
+          )
+          .toList();
+
 
     } on DioException catch (e) {
 
       throw ApiException.fromDioError(e);
 
     }
+
   }
 
 
 
   // Récupère les produits visibles
-  Future<List<dynamic>> fetchProduits({
+  Future<List<Produit>> fetchProduits({
 
     int? categorieId,
 
@@ -62,7 +71,11 @@ class CatalogService {
       );
 
 
-      return response.data as List<dynamic>;
+      return (response.data as List)
+          .map(
+            (json) => Produit.fromJson(json),
+          )
+          .toList();
 
 
     } on DioException catch (e) {
@@ -76,7 +89,7 @@ class CatalogService {
 
 
   // Récupère détail produit public
-  Future<Map<String,dynamic>> fetchProduitDetail(
+  Future<Produit> fetchProduitDetail(
 
     int produitId
 
@@ -94,7 +107,9 @@ class CatalogService {
       );
 
 
-      return response.data as Map<String,dynamic>;
+      return Produit.fromJson(
+        response.data,
+      );
 
 
     } on DioException catch (e) {
