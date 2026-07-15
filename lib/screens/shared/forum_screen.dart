@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/routes/app_routes.dart';
 
 import '../../providers/sujet_forum_provider.dart';
 
@@ -52,7 +53,7 @@ class _ForumScreenState extends State<ForumScreen> {
         onPressed: () {
 
           context.push(
-            "/forum/nouveau",
+            AppRoutes.nouveauSujet,
           );
 
         },
@@ -160,8 +161,8 @@ class _ForumScreenState extends State<ForumScreen> {
                       if (!sujet.ferme) {
 
                         context.push(
-                          "/forum/${sujet.id}",
-                          extra: sujet,
+                          AppRoutes.sujetDetail,
+                           extra: sujet,
                         );
 
                       }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/routes/app_routes.dart';
 
 import '../../models/sujet_forum_model.dart';
 
@@ -77,8 +78,9 @@ class SujetForumDetailScreen extends StatelessWidget {
                   onPressed: () {
 
                     context.push(
-                      "/forum/${sujet.id}/reponses",
+                      AppRoutes.reponsesForum,
                       extra: sujet,
+                      
                     );
 
                   },

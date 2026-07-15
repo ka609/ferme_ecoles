@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/produit_provider.dart';
+import '../../models/produit_model.dart';
 
 
 class EditProduitScreen extends StatefulWidget {
 
-  final Map<String,dynamic> produit;
+  final Produit produit;
 
 
   const EditProduitScreen({
@@ -18,7 +19,9 @@ class EditProduitScreen extends StatefulWidget {
   @override
   State<EditProduitScreen> createState() =>
       _EditProduitScreenState();
+
 }
+
 
 
 
@@ -36,6 +39,29 @@ class _EditProduitScreenState
 
   late TextEditingController _prixController;
 
+  late TextEditingController _stockController;
+
+  late TextEditingController _uniteController;
+
+
+
+  String? _typeProduit;
+
+
+
+  final List<String> _typesProduits = [
+
+    "PRODUIT_FRAIS",
+
+    "PRODUIT_TRANSFORME",
+
+    "INTRANT_AGROECOLOGIQUE",
+
+  ];
+
+
+
+
 
 
   @override
@@ -44,31 +70,57 @@ class _EditProduitScreenState
     super.initState();
 
 
+
     _nomController =
         TextEditingController(
-          text:
-              widget.produit["nom"],
+          text: widget.produit.nom,
         );
+
 
 
     _descriptionController =
         TextEditingController(
-          text:
-              widget.produit["description"],
+          text: widget.produit.description ?? "",
         );
+
 
 
     _prixController =
         TextEditingController(
-          text:
-              widget.produit["prix"].toString(),
+          text: widget.produit.prix.toString(),
         );
+
+
+
+    _stockController =
+        TextEditingController(
+          text: widget.produit.stock.toString(),
+        );
+
+
+
+    _uniteController =
+        TextEditingController(
+          text: widget.produit.unite,
+        );
+
+
+
+    _typeProduit =
+        widget.produit.typeProduit;
+
+
   }
+
+
+
+
 
 
 
   @override
   void dispose() {
+
 
     _nomController.dispose();
 
@@ -76,18 +128,31 @@ class _EditProduitScreenState
 
     _prixController.dispose();
 
+    _stockController.dispose();
+
+    _uniteController.dispose();
+
+
     super.dispose();
 
   }
 
 
 
+
+
+
+
+
   Future<void> _updateProduit() async {
 
 
-    if(!_formKey.currentState!.validate()){
+    if (!_formKey.currentState!.validate()) {
+
       return;
+
     }
+
 
 
 
@@ -96,42 +161,86 @@ class _EditProduitScreenState
             .read<ProduitProvider>()
             .updateProduit(
 
-          widget.produit["id"],
 
-          {
-
-            "nom":
-                _nomController.text.trim(),
-
-            "description":
-                _descriptionController.text.trim(),
-
-            "prix":
-                _prixController.text.trim(),
-
-          },
-        );
+      widget.produit.id,
 
 
 
-    if(!mounted) return;
+      {
+
+
+        "nom":
+            _nomController.text.trim(),
+
+
+
+        "description":
+            _descriptionController.text.trim(),
+
+
+
+        "prix":
+            double.parse(
+              _prixController.text,
+            ),
+
+
+
+        "stock":
+            double.parse(
+              _stockController.text,
+            ),
+
+
+
+        "unite":
+            _uniteController.text.trim(),
+
+
+
+        "type_produit":
+            _typeProduit,
+
+
+
+      },
+
+    );
+
+
+
+
+
+
+
+    if (!mounted) return;
+
+
 
 
 
     ScaffoldMessenger.of(context)
         .showSnackBar(
 
+
       SnackBar(
 
-        content: Text(
+        content:
+            Text(
 
           success
               ? "Produit modifié"
               : "Erreur modification",
 
         ),
+
       ),
+
+
     );
+
+
+
 
 
 
@@ -141,26 +250,41 @@ class _EditProduitScreenState
 
     }
 
+
   }
 
 
 
+
+
+
+
+
+
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
+
 
     return Scaffold(
 
+
+
       appBar:
           AppBar(
+
         title:
             const Text(
-          "Modifier produit",
-        ),
+              "Modifier produit",
+            ),
+
       ),
 
 
 
+
+
       body:
+
 
           Padding(
 
@@ -168,7 +292,10 @@ class _EditProduitScreenState
             const EdgeInsets.all(16),
 
 
+
+
         child:
+
 
             Form(
 
@@ -176,95 +303,280 @@ class _EditProduitScreenState
               _formKey,
 
 
+
           child:
 
-              Column(
 
-            children:[
+              SingleChildScrollView(
 
 
-              TextFormField(
 
-                controller:
-                    _nomController,
+            child:
 
-                decoration:
-                    const InputDecoration(
-                  labelText:
-                      "Nom",
-                  border:
-                      OutlineInputBorder(),
+
+                Column(
+
+
+
+              children: [
+
+
+
+
+
+                TextFormField(
+
+                  controller:
+                      _nomController,
+
+
+                  decoration:
+                      const InputDecoration(
+
+                    labelText:
+                        "Nom",
+
+                    border:
+                        OutlineInputBorder(),
+
+                  ),
+
                 ),
-              ),
 
 
 
-              const SizedBox(height:16),
 
 
 
-              TextFormField(
+                const SizedBox(height:16),
 
-                controller:
-                    _descriptionController,
 
-                maxLines:
-                    3,
 
-                decoration:
-                    const InputDecoration(
-                  labelText:
-                      "Description",
-                  border:
-                      OutlineInputBorder(),
+
+
+
+                TextFormField(
+
+                  controller:
+                      _descriptionController,
+
+
+                  maxLines:
+                      3,
+
+
+                  decoration:
+                      const InputDecoration(
+
+                    labelText:
+                        "Description",
+
+                    border:
+                        OutlineInputBorder(),
+
+                  ),
+
                 ),
-              ),
 
 
 
-              const SizedBox(height:16),
 
 
 
-              TextFormField(
+                const SizedBox(height:16),
 
-                controller:
-                    _prixController,
 
-                keyboardType:
-                    TextInputType.number,
 
-                decoration:
-                    const InputDecoration(
-                  labelText:
-                      "Prix",
-                  border:
-                      OutlineInputBorder(),
+
+
+
+                TextFormField(
+
+                  controller:
+                      _prixController,
+
+
+                  keyboardType:
+                      TextInputType.number,
+
+
+                  decoration:
+                      const InputDecoration(
+
+                    labelText:
+                        "Prix",
+
+                    border:
+                        OutlineInputBorder(),
+
+                  ),
+
                 ),
-              ),
 
 
 
-              const SizedBox(height:24),
 
 
 
-              ElevatedButton(
-
-                onPressed:
-                    _updateProduit,
+                const SizedBox(height:16),
 
 
-                child:
-                    const Text(
-                  "Enregistrer",
+
+
+
+
+                TextFormField(
+
+                  controller:
+                      _stockController,
+
+
+                  keyboardType:
+                      TextInputType.number,
+
+
+                  decoration:
+                      const InputDecoration(
+
+                    labelText:
+                        "Stock",
+
+                    border:
+                        OutlineInputBorder(),
+
+                  ),
+
                 ),
-              ),
 
-            ],
+
+
+
+
+
+                const SizedBox(height:16),
+
+
+
+
+
+
+                TextFormField(
+
+                  controller:
+                      _uniteController,
+
+
+                  decoration:
+                      const InputDecoration(
+
+                    labelText:
+                        "Unité (kg, litre, sac...)",
+
+                    border:
+                        OutlineInputBorder(),
+
+                  ),
+
+                ),
+
+
+
+
+
+
+                const SizedBox(height:16),
+
+
+
+
+
+
+                DropdownButtonFormField<String>(
+  value: _typesProduits.contains(_typeProduit)
+      ? _typeProduit
+      : null,
+
+  decoration: const InputDecoration(
+    labelText: "Type de produit",
+    border: OutlineInputBorder(),
+  ),
+
+  items: _typesProduits.map(
+    (type) {
+      return DropdownMenuItem<String>(
+        value: type,
+        child: Text(type),
+      );
+    },
+  ).toList(),
+
+  onChanged: (value) {
+    setState(() {
+      _typeProduit = value;
+    });
+  },
+),
+
+
+
+
+
+
+
+                const SizedBox(height:24),
+
+
+
+
+
+
+
+
+                SizedBox(
+
+                  width:
+                      double.infinity,
+
+
+
+                  child:
+
+
+                      ElevatedButton(
+
+
+                    onPressed:
+                        _updateProduit,
+
+
+                    child:
+                        const Text(
+                          "Enregistrer",
+                        ),
+
+
+                  ),
+
+
+                ),
+
+
+
+              ],
+
+
+            ),
+
+
           ),
+
         ),
+
       ),
+
+
     );
+
   }
+
 }

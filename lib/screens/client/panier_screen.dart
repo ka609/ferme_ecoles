@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/routes/app_routes.dart';
 
 import '../../providers/panier_provider.dart';
 import '../../widgets/panier_article_card.dart';
@@ -165,7 +166,7 @@ class _PanierScreenState extends State<PanierScreen> {
                       onPressed: () {
 
                         context.push(
-                          "/paiement",
+                          AppRoutes.paiement,
                         );
 
                       },

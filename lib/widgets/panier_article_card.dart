@@ -1,109 +1,56 @@
 import 'package:flutter/material.dart';
-
-import '../models/panier_article_model.dart';
-
+import '../../models/panier_article_model.dart';
+import 'common/app_card.dart';
 
 class PanierArticleCard extends StatelessWidget {
   final PanierArticle article;
+  final VoidCallback? onIncrement;
+  final VoidCallback? onDecrement;
   final VoidCallback? onDelete;
 
   const PanierArticleCard({
     super.key,
     required this.article,
+    this.onIncrement,
+    this.onDecrement,
     this.onDelete,
   });
 
-
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(
-        bottom: 12,
+    return Dismissible(
+      key: Key(article.id.toString()),
+      direction: DismissDirection.endToStart,
+      onDismissed: (_) => onDelete?.call(),
+      background: Container(
+        color: Colors.red,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 16),
+        child: const Icon(Icons.delete, color: Colors.white),
       ),
-
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-
-        child: Row(
-          children: [
-
-            // Image produit
-            Container(
-              width: 70,
-              height: 70,
-
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.grey.shade200,
+      child: AppCard(
+        padding: EdgeInsets.zero,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        child: ListTile(
+          title: Text(article.produitNom ?? "Produit"),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("${article.prix.toStringAsFixed(0)} FCFA"),
+              Text(
+                "Sous-total : ${article.sousTotal.toStringAsFixed(0)} FCFA",
+                style: const TextStyle(fontWeight: FontWeight.w500),
               ),
-
-              child: const Icon(
-                Icons.image,
-              ),
-            ),
-
-
-            const SizedBox(width: 12),
-
-
-            // Informations
-            Expanded(
-              child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
-
-                children: [
-
-                  Text(
-                    article.produitNom ?? "Produit",
-
-                    maxLines: 1,
-
-                    overflow:
-                        TextOverflow.ellipsis,
-
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-
-                  const SizedBox(height: 6),
-
-
-                  Text(
-                    "Quantité : ${article.quantite}",
-                  ),
-
-
-                  const SizedBox(height: 4),
-
-
-                  Text(
-                    "${article.sousTotal} FCFA",
-
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-
-            // Suppression
-            IconButton(
-              onPressed: onDelete,
-
-              icon: const Icon(
-                Icons.delete_outline,
-              ),
-            ),
-          ],
+            ],
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(icon: const Icon(Icons.remove), onPressed: onDecrement),
+              Text("${article.quantite}", style: const TextStyle(fontWeight: FontWeight.bold)),
+              IconButton(icon: const Icon(Icons.add), onPressed: onIncrement),
+            ],
+          ),
         ),
       ),
     );

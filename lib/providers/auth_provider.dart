@@ -174,49 +174,76 @@ class AuthProvider extends ChangeNotifier {
 
 
   // Chargement profil connecté
-  Future<void> loadUser() async {
+Future<void> loadUser() async {
 
-    debugPrint(
-      "CHARGEMENT PROFIL",
-    );
-
-
-    try {
-
-      final data =
-          await _service.fetchMe();
+  debugPrint(
+    "CHARGEMENT PROFIL",
+  );
 
 
-      debugPrint(
-        "PROFILE RESPONSE : $data",
-      );
+  try {
 
 
-      _user = Utilisateur.fromJson(
-        data,
-      );
+    final hasToken =
+        await TokenManager.hasToken();
 
+
+
+    if (!hasToken) {
 
       debugPrint(
-        "USER ACTUEL : ${_user?.username}",
+        "AUCUN TOKEN PRESENT",
       );
 
-
-      notifyListeners();
-
-
-    } catch (e) {
-
-      debugPrint(
-        "PROFILE ERROR : $e",
-      );
-
-
-      await logout();
+      return;
 
     }
 
+
+
+    final data =
+        await _service.fetchMe();
+
+
+
+    debugPrint(
+      "PROFILE RESPONSE : $data",
+    );
+
+
+
+    _user =
+        Utilisateur.fromJson(
+          data,
+        );
+
+
+
+    debugPrint(
+      "USER ACTUEL : ${_user?.username}",
+    );
+
+
+
+    notifyListeners();
+
+
+
+  } catch (e) {
+
+
+    debugPrint(
+      "PROFILE ERROR : $e",
+    );
+
+
+
+    await logout();
+
+
   }
+
+}
 
 
 

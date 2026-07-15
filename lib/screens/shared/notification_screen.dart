@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/notification_provider.dart';
 import '../../widgets/notification_card.dart';
+import '../../widgets/common/empty_state.dart';
 
 
 class NotificationScreen extends StatefulWidget {
@@ -68,13 +69,11 @@ class _NotificationScreenState
 
 
             if (provider.notifications.isEmpty) {
-
-              return const Center(
-                child: Text(
-                  "Aucune notification",
-                ),
-              );
-            }
+                 return const EmptyState(
+                      icon: Icons.notifications_none,
+                    message: "Aucune notification pour le moment",
+             );
+          }
 
 
             return ListView.builder(

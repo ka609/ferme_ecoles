@@ -1,187 +1,304 @@
 import 'package:flutter/foundation.dart';
 
 import '../services/formation_service.dart';
+import '../models/formation_model.dart';
+
 
 
 class FormationProvider extends ChangeNotifier {
 
-  final FormationService _service = FormationService();
+
+  final FormationService _service =
+      FormationService();
 
 
 
-  List<dynamic> _formations = [];
+  List<Formation> _formations = [];
 
-  Map<String, dynamic>? _formationDetail;
+
+  Formation? _formationDetail;
 
 
 
   bool _isLoading = false;
 
+
   String? _error;
 
 
 
-  List<dynamic> get formations => _formations;
 
 
-  Map<String, dynamic>? get formationDetail =>
+  List<Formation> get formations =>
+      _formations;
+
+
+
+  Formation? get formationDetail =>
       _formationDetail;
 
 
-  bool get isLoading => _isLoading;
+
+  bool get isLoading =>
+      _isLoading;
 
 
-  String? get error => _error;
+
+  String? get error =>
+      _error;
+
+
+
+
+
 
 
 
   // Charger formations
+
   Future<void> fetchFormations() async {
 
+
     try {
+
 
       _setLoading(true);
 
 
-      _formations =
+
+      final data =
           await _service.fetchFormations();
+
+
+
+      _formations =
+          data
+              .map(
+                (json) =>
+                    Formation.fromJson(json),
+              )
+              .toList();
+
 
 
       _error = null;
 
 
-    } catch (e) {
 
-      _error = e.toString();
+    } catch(e){
+
+
+      _error =
+          e.toString();
+
 
 
     } finally {
 
+
       _setLoading(false);
 
+
     }
+
 
   }
 
 
 
+
+
+
+
+
   // Charger détail formation
+
   Future<void> fetchFormationDetail(
     int formationId,
   ) async {
 
+
     try {
+
 
       _setLoading(true);
 
 
-      _formationDetail =
+
+      final data =
           await _service.fetchFormationDetail(
             formationId,
           );
 
 
+
+      _formationDetail =
+          Formation.fromJson(
+            data,
+          );
+
+
+
       _error = null;
 
 
-    } catch (e) {
 
-      _error = e.toString();
+    } catch(e){
+
+
+      _error =
+          e.toString();
+
 
 
     } finally {
 
+
       _setLoading(false);
 
+
     }
+
 
   }
 
 
 
+
+
+
+
+
   // Créer formation
+
   Future<bool> createFormation(
-    Map<String, dynamic> data,
+    Map<String,dynamic> data,
   ) async {
 
+
     try {
+
 
       _setLoading(true);
 
 
-      final formation =
+
+      final response =
           await _service.createFormation(
             data,
           );
 
 
+
       _formations.add(
-        formation,
+
+        Formation.fromJson(
+          response,
+        ),
+
       );
 
-
-      _error = null;
 
 
       notifyListeners();
 
 
+
       return true;
 
 
-    } catch (e) {
 
-      _error = e.toString();
+    } catch(e){
+
+
+      _error =
+          e.toString();
+
+
 
       return false;
 
 
+
     } finally {
+
 
       _setLoading(false);
 
+
     }
 
+
   }
 
 
 
-  // Mise à jour chargement
+
+
+
+
   void _setLoading(
     bool value,
-  ) {
+  ){
 
-    _isLoading = value;
+
+    _isLoading =
+        value;
+
+
 
     notifyListeners();
+
 
   }
 
 
 
-  // Nettoyer erreur
-  void clearError() {
 
-    _error = null;
+
+
+
+
+  void clearError(){
+
+
+    _error =
+        null;
+
+
 
     notifyListeners();
+
 
   }
 
 
 
-  // Réinitialiser données
-  void clear() {
+
+
+
+
+  void clear(){
+
 
     _formations.clear();
 
-    _formationDetail = null;
 
-    _error = null;
+
+    _formationDetail =
+        null;
+
+
+
+    _error =
+        null;
+
 
 
     notifyListeners();
 
+
   }
+
 
 }

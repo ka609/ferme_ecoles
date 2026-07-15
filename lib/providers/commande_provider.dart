@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../models/commande_model.dart';
 import '../services/commande_service.dart';
 
 
@@ -8,13 +9,11 @@ class CommandeProvider extends ChangeNotifier {
   final CommandeService _service = CommandeService();
 
 
+  List<Commande> _commandes = [];
 
-  List<dynamic> _commandes = [];
-
-  Map<String, dynamic>? _commandeDetail;
+  Commande? _commandeDetail;
 
   Map<String, dynamic>? _paiement;
-
 
 
   bool _isLoading = false;
@@ -23,16 +22,19 @@ class CommandeProvider extends ChangeNotifier {
 
 
 
-  List<dynamic> get commandes => _commandes;
+  List<Commande> get commandes => _commandes;
 
-  Map<String, dynamic>? get commandeDetail =>
+
+  Commande? get commandeDetail =>
       _commandeDetail;
+
 
   Map<String, dynamic>? get paiement =>
       _paiement;
 
 
   bool get isLoading => _isLoading;
+
 
   String? get error => _error;
 
@@ -50,10 +52,17 @@ class CommandeProvider extends ChangeNotifier {
       _setLoading(true);
 
 
-      _commandes =
+      final data =
           await _service.fetchCommandes(
             statut: statut,
           );
+
+
+      _commandes = data
+          .map<Commande>(
+            (json) => Commande.fromJson(json),
+          )
+          .toList();
 
 
       _error = null;
@@ -71,25 +80,36 @@ class CommandeProvider extends ChangeNotifier {
     }
 
   }
+
 
 
 
   // Charger détail commande
   Future<void> fetchCommandeDetail(
 
-    int commandeId
+    int commandeId,
 
   ) async {
+    print("===== FETCH COMMANDE DETAIL =====");
+
 
     try {
 
       _setLoading(true);
+      print("Avant appel service");
 
 
-      _commandeDetail =
+      final data =
           await _service.fetchCommandeDetail(
             commandeId,
           );
+
+      print("Après appel service");
+      print(data);
+
+
+      _commandeDetail =
+          Commande.fromJson(data);
 
 
       _error = null;
@@ -107,6 +127,8 @@ class CommandeProvider extends ChangeNotifier {
     }
 
   }
+
+
 
 
 
@@ -126,7 +148,7 @@ class CommandeProvider extends ChangeNotifier {
       _setLoading(true);
 
 
-      final commande =
+      final data =
           await _service.createCommandeFromPanier(
 
             producteurId: producteurId,
@@ -136,6 +158,11 @@ class CommandeProvider extends ChangeNotifier {
             lignes: lignes,
 
           );
+
+
+      final commande =
+          Commande.fromJson(data);
+
 
 
       _commandes.add(
@@ -170,6 +197,8 @@ class CommandeProvider extends ChangeNotifier {
 
 
 
+
+
   // Modifier statut commande
   Future<bool> updateCommandeStatut({
 
@@ -184,7 +213,7 @@ class CommandeProvider extends ChangeNotifier {
       _setLoading(true);
 
 
-      final updated =
+      final data =
           await _service.updateCommandeStatut(
 
             commandeId,
@@ -194,12 +223,17 @@ class CommandeProvider extends ChangeNotifier {
           );
 
 
+      final commande =
+          Commande.fromJson(data);
+
+
+
       _updateCommandeList(
-        updated,
+        commande,
       );
 
 
-      _commandeDetail = updated;
+      _commandeDetail = commande;
 
 
       _error = null;
@@ -229,36 +263,46 @@ class CommandeProvider extends ChangeNotifier {
 
 
 
+
+
   // Annuler commande
   Future<bool> annulerCommande(
 
-    int commandeId
+    int commandeId,
 
   ) async {
+
 
     try {
 
       _setLoading(true);
 
 
-      final updated =
+
+      final data =
           await _service.annulerCommande(
             commandeId,
           );
 
 
+      final commande =
+          Commande.fromJson(data);
+
+
+
       _updateCommandeList(
-        updated,
+        commande,
       );
 
 
-      _commandeDetail = updated;
+      _commandeDetail = commande;
 
 
       notifyListeners();
 
 
       return true;
+
 
 
     } catch (e) {
@@ -279,16 +323,20 @@ class CommandeProvider extends ChangeNotifier {
 
 
 
+
+
   // Charger paiement
   Future<void> fetchPaiement(
 
-    int commandeId
+    int commandeId,
 
   ) async {
+
 
     try {
 
       _setLoading(true);
+
 
 
       _paiement =
@@ -300,9 +348,11 @@ class CommandeProvider extends ChangeNotifier {
       _error = null;
 
 
+
     } catch (e) {
 
       _error = e.toString();
+
 
 
     } finally {
@@ -312,6 +362,8 @@ class CommandeProvider extends ChangeNotifier {
     }
 
   }
+
+
 
 
 
@@ -326,11 +378,15 @@ class CommandeProvider extends ChangeNotifier {
 
     String? reference,
 
+
   }) async {
+
 
     try {
 
+
       _setLoading(true);
+
 
 
       _paiement =
@@ -347,13 +403,17 @@ class CommandeProvider extends ChangeNotifier {
           );
 
 
+
       notifyListeners();
+
 
 
       return true;
 
 
+
     } catch (e) {
+
 
       _error = e.toString();
 
@@ -361,45 +421,56 @@ class CommandeProvider extends ChangeNotifier {
       return false;
 
 
+
     } finally {
 
+
       _setLoading(false);
+
 
     }
 
   }
+
+
 
 
 
   // Mise à jour liste
   void _updateCommandeList(
 
-    Map<String, dynamic> commande
+    Commande commande,
 
   ) {
+
 
     final index =
         _commandes.indexWhere(
 
-          (item) => item["id"] == commande["id"],
+          (item) =>
+              item.id == commande.id,
 
         );
 
 
-    if (index != -1) {
+
+    if(index != -1){
 
       _commandes[index] = commande;
 
     }
 
+
   }
+
+
 
 
 
   // Gestion chargement
   void _setLoading(
 
-    bool value
+    bool value,
 
   ) {
 
@@ -411,8 +482,10 @@ class CommandeProvider extends ChangeNotifier {
 
 
 
+
+
   // Nettoyer erreur
-  void clearError() {
+  void clearError(){
 
     _error = null;
 
@@ -422,8 +495,10 @@ class CommandeProvider extends ChangeNotifier {
 
 
 
+
+
   // Réinitialiser données
-  void clear() {
+  void clear(){
 
     _commandes = [];
 

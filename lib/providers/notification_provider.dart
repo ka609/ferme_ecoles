@@ -1,30 +1,39 @@
 import 'package:flutter/foundation.dart';
 
+import '../models/notification_model.dart';
 import '../services/notification_service.dart';
 
 
+
 class NotificationProvider extends ChangeNotifier {
+
 
   final NotificationService _service =
       NotificationService();
 
 
 
-  List<dynamic> _notifications = [];
+  List<NotificationModel> _notifications = [];
+
 
 
   bool _isLoading = false;
+
 
   String? _error;
 
 
 
-  List<dynamic> get notifications =>
+
+
+  List<NotificationModel> get notifications =>
       _notifications;
+
 
 
   bool get isLoading =>
       _isLoading;
+
 
 
   String? get error =>
@@ -32,29 +41,52 @@ class NotificationProvider extends ChangeNotifier {
 
 
 
+
+
+
   // Charger notifications
   Future<void> fetchNotifications() async {
 
+
     try {
+
 
       _setLoading(true);
 
 
-      _notifications =
+
+      final data =
           await _service.fetchNotifications();
+
+
+
+
+      _notifications = data
+          .map<NotificationModel>(
+            (json) =>
+                NotificationModel.fromJson(json),
+          )
+          .toList();
+
 
 
       _error = null;
 
 
+
+
     } catch (e) {
+
 
       _error = e.toString();
 
 
+
     } finally {
 
+
       _setLoading(false);
+
 
     }
 
@@ -62,42 +94,73 @@ class NotificationProvider extends ChangeNotifier {
 
 
 
+
+
+
+
   // Lire notification
   Future<bool> readNotification(
+
     int id,
+
   ) async {
 
+
     try {
+
+
 
       await _service.readNotification(
         id,
       );
 
 
+
+
       final index =
           _notifications.indexWhere(
-            (item) => item["id"] == id,
+
+            (item) =>
+                item.id == id,
+
           );
 
 
-      if (index != -1) {
 
-        _notifications[index]["lu"] = true;
+
+      if(index != -1){
+
+
+        _notifications[index] =
+            _notifications[index].copyWith(
+              lu: true,
+            );
+
 
       }
+
+
 
 
       notifyListeners();
 
 
+
       return true;
 
 
-    } catch (e) {
+
+
+    } catch(e){
+
+
 
       _error = e.toString();
 
+
       return false;
+
+
 
     }
 
@@ -105,40 +168,70 @@ class NotificationProvider extends ChangeNotifier {
 
 
 
+
+
+
+
+
   // Mise à jour chargement
   void _setLoading(
+
     bool value,
-  ) {
+
+  ){
+
 
     _isLoading = value;
 
+
     notifyListeners();
 
+
   }
+
+
+
+
+
 
 
 
   // Nettoyer erreur
-  void clearError() {
+  void clearError(){
+
 
     _error = null;
 
+
     notifyListeners();
 
+
   }
+
+
+
+
+
 
 
 
   // Réinitialiser données
-  void clear() {
+  void clear(){
 
-    _notifications.clear();
+
+
+    _notifications = [];
+
+
 
     _error = null;
 
 
+
     notifyListeners();
 
+
   }
+
 
 }

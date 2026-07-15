@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-
-import '../models/notification_model.dart';
-
+import '../../models/notification_model.dart';
+import 'common/app_card.dart';
 
 class NotificationCard extends StatelessWidget {
-
   final NotificationModel notification;
   final VoidCallback? onTap;
 
@@ -14,134 +12,61 @@ class NotificationCard extends StatelessWidget {
     this.onTap,
   });
 
-
   @override
   Widget build(BuildContext context) {
-
-    return Card(
-
-      margin:
-          const EdgeInsets.only(
-        bottom: 12,
-      ),
-
-
-      color: notification.lu
-          ? null
-          : Colors.green.shade50,
-
-
-      shape:
-          RoundedRectangleBorder(
-        borderRadius:
-            BorderRadius.circular(12),
-      ),
-
-
-      child: InkWell(
-
-        borderRadius:
-            BorderRadius.circular(12),
-
-
+    return AppCard(
+      padding: EdgeInsets.zero,          // ListTile gère déjà son padding
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: ListTile(
         onTap: onTap,
-
-
-        child: Padding(
-
-          padding:
-              const EdgeInsets.all(16),
-
-
-          child: Row(
-
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
-
-
-            children: [
-
-              Icon(
-
-                notification.lu
-                    ? Icons.notifications_none
-                    : Icons.notifications_active,
-
-              ),
-
-
-              const SizedBox(width: 12),
-
-
-              Expanded(
-
-                child: Column(
-
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
-
-
-                  children: [
-
-                    Text(
-
-                      notification.titre,
-
-                      style:
-                          TextStyle(
-
-                        fontWeight:
-                            notification.lu
-                                ? FontWeight.normal
-                                : FontWeight.bold,
-                      ),
-                    ),
-
-
-                    const SizedBox(height: 6),
-
-
-                    Text(
-                      notification.message,
-
-                      maxLines:
-                          2,
-
-                      overflow:
-                          TextOverflow.ellipsis,
-                    ),
-
-
-                    if (notification.date != null)
-
-                      Padding(
-
-                        padding:
-                            const EdgeInsets.only(
-                          top: 6,
-                        ),
-
-
-                        child: Text(
-
-                          "${notification.date!.day}/"
-                          "${notification.date!.month}/"
-                          "${notification.date!.year}",
-
-                          style:
-                              const TextStyle(
-                            fontSize:
-                                12,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
+        leading: CircleAvatar(
+          backgroundColor: notification.lu
+              ? Colors.grey.shade300
+              : Theme.of(context).colorScheme.primaryContainer,
+          child: Icon(
+            _getIcon(notification.titre),
+            color: notification.lu
+                ? Colors.grey
+                : Theme.of(context).colorScheme.primary,
           ),
+        ),
+        title: Text(
+          notification.titre,
+          style: TextStyle(
+            fontWeight: notification.lu ? FontWeight.normal : FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(
+          notification.message,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: Text(
+          _formatDate(notification.date),
+          style: Theme.of(context).textTheme.bodySmall,
         ),
       ),
     );
+  }
+
+  IconData _getIcon(String type) {
+    switch (type) {
+      case "COMMANDE": return Icons.shopping_cart;
+      case "LIVRAISON": return Icons.local_shipping;
+      case "PAIEMENT": return Icons.payment;
+      case "FORMATION": return Icons.school;
+      default: return Icons.notifications;
+    }
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return "";
+    final now = DateTime.now();
+    final difference = now.difference(date);
+    if (difference.inDays == 0) {
+      return "${date.hour}:${date.minute.toString().padLeft(2, '0')}";
+    }
+    if (difference.inDays == 1) return "Hier";
+    return "${date.day}/${date.month}/${date.year}";
   }
 }

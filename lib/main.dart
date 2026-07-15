@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+
 import 'core/theme/app_theme.dart';
+
 
 import 'providers/auth_provider.dart';
 
@@ -28,154 +31,308 @@ import 'providers/sujet_forum_provider.dart';
 import 'providers/versement_provider.dart';
 import 'providers/statistique_provider.dart';
 
-import 'core/routes/app_route.dart';
 
-void main() {
+import 'core/routes/app_router.dart';
+
+
+
+Future<void> main() async {
+
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+
 
   final authProvider = AuthProvider();
 
+
+
+  // Vérifie si un utilisateur possède déjà
+  // une session valide au démarrage
+
+  await authProvider.loadUser();
+
+
+
   runApp(
+
     FermeEcoleApp(
+
       authProvider: authProvider,
+
     ),
+
   );
+
 
 }
 
 
+
+
+
+
 class FermeEcoleApp extends StatelessWidget {
+
 
   final AuthProvider authProvider;
 
+
+
   const FermeEcoleApp({
+
     super.key,
+
     required this.authProvider,
+
   });
+
+
+
 
 
   @override
   Widget build(BuildContext context) {
 
+
     return MultiProvider(
+
 
       providers: [
 
+
+
+        // Même instance utilisée par GoRouter
+
         ChangeNotifierProvider.value(
+
           value: authProvider,
+
         ),
 
 
+
+
+
         ChangeNotifierProvider(
+
           create: (_) => CatalogProvider(),
+
         ),
 
+
+
         ChangeNotifierProvider(
+
           create: (_) => CategorieProvider(),
+
         ),
 
+
+
         ChangeNotifierProvider(
+
           create: (_) => ProduitProvider(),
+
         ),
 
+
+
         ChangeNotifierProvider(
+
           create: (_) => CertificationProvider(),
+
         ),
 
+
+
         ChangeNotifierProvider(
+
           create: (_) => ProduitImageProvider(),
+
         ),
 
 
+
+
+
         ChangeNotifierProvider(
+
           create: (_) => PanierProvider(),
+
         ),
 
+
+
         ChangeNotifierProvider(
+
           create: (_) => CommandeProvider(),
+
         ),
 
+
+
         ChangeNotifierProvider(
+
           create: (_) => PaiementProvider(),
+
         ),
 
 
+
+
+
         ChangeNotifierProvider(
+
           create: (_) => LivraisonProvider(),
+
         ),
 
+
+
         ChangeNotifierProvider(
+
           create: (_) => CommissionProvider(),
+
         ),
 
+
+
         ChangeNotifierProvider(
+
           create: (_) => SocieteLivraisonProvider(),
+
         ),
 
 
+
+
+
         ChangeNotifierProvider(
+
           create: (_) => AvisProvider(),
+
         ),
 
+
+
         ChangeNotifierProvider(
+
           create: (_) => SujetForumProvider(),
+
         ),
 
+
+
         ChangeNotifierProvider(
+
           create: (_) => ReponseForumProvider(),
+
         ),
 
 
+
+
+
         ChangeNotifierProvider(
+
           create: (_) => FormationProvider(),
+
         ),
 
+
+
         ChangeNotifierProvider(
+
           create: (_) => SuiviFormationProvider(),
+
         ),
 
 
+
+
+
         ChangeNotifierProvider(
+
           create: (_) => ProducteurProvider(),
+
         ),
 
+
+
         ChangeNotifierProvider(
+
           create: (_) => NotificationProvider(),
+
         ),
 
+
+
         ChangeNotifierProvider(
+
           create: (_) => JournalActiviteProvider(),
+
         ),
 
+
+
         ChangeNotifierProvider(
+
           create: (_) => ParametreProvider(),
+
         ),
 
+
+
         ChangeNotifierProvider(
+
           create: (_) => VersementProvider(),
+
         ),
 
+
+
         ChangeNotifierProvider(
-      create: (_) => StatistiqueProvider(),
-    ),
+
+          create: (_) => StatistiqueProvider(),
+
+        ),
+
+
 
       ],
 
 
+
+
+
       child: MaterialApp.router(
+
 
         debugShowCheckedModeBanner: false,
 
+
         title: "Ferme École Intégrée",
+
+
         theme: AppTheme.light,
 
+
+
         routerConfig: createRouter(
+
           authProvider,
+
         ),
+
 
       ),
 
+
     );
 
+
   }
+
 
 }

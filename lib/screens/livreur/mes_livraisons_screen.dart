@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/routes/app_routes.dart';
 
 import '../../providers/livraison_provider.dart';
 
@@ -200,7 +201,7 @@ class _MesLivraisonsScreenState
 
                       context.push(
 
-                        "/livreur/livraison/${livraison.id}",
+                        AppRoutes.livraisonDetail.replaceFirst(':id', livraison.id.toString()),
 
                       );
 
