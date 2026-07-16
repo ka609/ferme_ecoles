@@ -392,75 +392,66 @@ class ProduitCard extends StatelessWidget {
 
                   Row(
 
-                    children: [
+                children: [
+
+                 const Icon(
+                   Icons.star,
+                    size: 18,
+                     color: Colors.amber,
+                   ),
 
 
-                      const Icon(
-
-                        Icons.star,
-
-                        size: 18,
-
-                        color: Colors.amber,
-
-                      ),
+                   const SizedBox(width: 4),
 
 
-                      const SizedBox(width: 4),
+             Text(
+                  "${produit.noteMoyenne.toStringAsFixed(1)}",
+             ),
 
 
-                      Text(
-
-                        "${produit.noteMoyenne.toStringAsFixed(1)}",
-
-                      ),
-
-
-                      Text(
-
-                        " (${produit.nombreAvis})",
-
-                        style:
-                            Theme.of(context)
-                                .textTheme
-                                .bodySmall,
-
-                      ),
-
-
-                      const Spacer(),
+    Text(
+      " (${produit.nombreAvis})",
+      style:
+          Theme.of(context)
+              .textTheme
+              .bodySmall,
+    ),
 
 
 
-                      if(actions != null)
-
-                        ...actions!
+    const Spacer(),
 
 
 
-                      else
+    // Icône avis toujours visible
 
-                        IconButton(
+    IconButton(
 
-                          tooltip:
-                              "Donner un avis",
+      tooltip:
+          "Donner un avis",
 
-                          onPressed:
-                              onReview,
+      onPressed:
+          onReview,
 
-                          icon:
-                              const Icon(
+      icon:
+          const Icon(
+            Icons.rate_review_outlined,
+          ),
 
-                                Icons.rate_review_outlined,
-
-                              ),
-
-                        ),
+    ),
 
 
-                    ],
 
-                  ),
+    // Actions supplémentaires producteur/admin
+
+    if(actions != null)
+
+      ...actions!,
+
+
+  ],
+
+),
 
 
 
@@ -480,7 +471,7 @@ class ProduitCard extends StatelessWidget {
                     child: FilledButton.icon(
 
                       onPressed:
-                          produit.disponible
+                          produit.disponible && produit.stock > 0
                               ? onAddCart
                               : null,
 
@@ -496,7 +487,7 @@ class ProduitCard extends StatelessWidget {
                       label:
                           Text(
 
-                            produit.disponible
+                            produit.disponible && produit.stock > 0
 
                                 ? "Ajouter au panier"
 

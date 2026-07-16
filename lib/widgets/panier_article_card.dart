@@ -1,58 +1,248 @@
 import 'package:flutter/material.dart';
-import '../../models/panier_article_model.dart';
+
+import '../models/panier_article_model.dart';
 import 'common/app_card.dart';
 
+
 class PanierArticleCard extends StatelessWidget {
+
   final PanierArticle article;
-  final VoidCallback? onIncrement;
-  final VoidCallback? onDecrement;
+
   final VoidCallback? onDelete;
 
+  final VoidCallback? onIncrease;
+
+  final VoidCallback? onDecrease;
+
+
   const PanierArticleCard({
+
     super.key,
+
     required this.article,
-    this.onIncrement,
-    this.onDecrement,
+
     this.onDelete,
+
+    this.onIncrease,
+
+    this.onDecrease,
+
   });
+
+
 
   @override
   Widget build(BuildContext context) {
-    return Dismissible(
-      key: Key(article.id.toString()),
-      direction: DismissDirection.endToStart,
-      onDismissed: (_) => onDelete?.call(),
-      background: Container(
-        color: Colors.red,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 16),
-        child: const Icon(Icons.delete, color: Colors.white),
+
+
+    return AppCard(
+
+      margin: const EdgeInsets.only(
+        bottom: 12,
       ),
-      child: AppCard(
-        padding: EdgeInsets.zero,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        child: ListTile(
-          title: Text(article.produitNom ?? "Produit"),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("${article.prix.toStringAsFixed(0)} FCFA"),
-              Text(
-                "Sous-total : ${article.sousTotal.toStringAsFixed(0)} FCFA",
-                style: const TextStyle(fontWeight: FontWeight.w500),
-              ),
-            ],
+
+
+      child: Row(
+
+        children: [
+
+
+          CircleAvatar(
+
+            backgroundColor:
+                Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withOpacity(0.12),
+
+
+            child: Icon(
+
+              Icons.shopping_basket_outlined,
+
+              color:
+                  Theme.of(context)
+                      .colorScheme
+                      .primary,
+
+            ),
+
           ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(icon: const Icon(Icons.remove), onPressed: onDecrement),
-              Text("${article.quantite}", style: const TextStyle(fontWeight: FontWeight.bold)),
-              IconButton(icon: const Icon(Icons.add), onPressed: onIncrement),
-            ],
+
+
+
+          const SizedBox(width: 12),
+
+
+
+
+
+          Expanded(
+
+            child: Column(
+
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
+
+
+              children: [
+
+
+
+                Text(
+
+                  article.produitNom ??
+                      "Produit",
+
+                  style:
+                      const TextStyle(
+
+                        fontWeight:
+                            FontWeight.bold,
+
+                        fontSize: 16,
+
+                      ),
+
+                ),
+
+
+
+                const SizedBox(height: 6),
+
+
+
+
+                Text(
+
+                  "${article.prix.toStringAsFixed(0)} FCFA / unité",
+
+                  style:
+                      Theme.of(context)
+                          .textTheme
+                          .bodyMedium,
+
+                ),
+
+
+
+
+
+                Text(
+
+                  "Sous-total : ${article.sousTotal.toStringAsFixed(0)} FCFA",
+
+                  style:
+                      const TextStyle(
+
+                        fontWeight:
+                            FontWeight.w600,
+
+                      ),
+
+                ),
+
+
+
+
+
+                Row(
+
+                  children: [
+
+
+
+                    IconButton(
+
+                      onPressed:
+                          onDecrease,
+
+                      icon:
+                          const Icon(
+                            Icons.remove_circle_outline,
+                          ),
+
+                    ),
+
+
+
+
+
+                    Text(
+
+                      "${article.quantite}",
+
+                      style:
+                          const TextStyle(
+
+                            fontSize: 16,
+
+                            fontWeight:
+                                FontWeight.bold,
+
+                          ),
+
+                    ),
+
+
+
+
+
+                    IconButton(
+
+                      onPressed:
+                          onIncrease,
+
+                      icon:
+                          const Icon(
+                            Icons.add_circle_outline,
+                          ),
+
+                    ),
+
+
+
+                  ],
+
+                ),
+
+
+
+              ],
+
+            ),
+
           ),
-        ),
+
+
+
+
+
+          IconButton(
+
+            onPressed:
+                onDelete,
+
+
+            icon:
+                const Icon(
+
+                  Icons.delete_outline,
+
+                  color: Colors.red,
+
+                ),
+
+          ),
+
+
+        ],
+
       ),
+
     );
+
+
   }
+
 }

@@ -1,95 +1,169 @@
 import 'package:flutter/foundation.dart';
 
+import '../models/versement_model.dart';
 import '../services/versement_service.dart';
 
 
+
 class VersementProvider extends ChangeNotifier {
+
 
   final VersementService _service =
       VersementService();
 
 
 
-  List<dynamic> _versements = [];
+  List<Versement> _versements = [];
 
-  Map<String,dynamic>? _detail;
+
+  Versement? _detail;
+
 
 
   bool _isLoading = false;
+
 
   String? _error;
 
 
 
-  List<dynamic> get versements => _versements;
 
-  Map<String,dynamic>? get detail => _detail;
 
-  bool get isLoading => _isLoading;
+  List<Versement> get versements =>
+      _versements;
 
-  String? get error => _error;
+
+
+  Versement? get detail =>
+      _detail;
+
+
+
+  bool get isLoading =>
+      _isLoading;
+
+
+
+  String? get error =>
+      _error;
+
+
+
+
+
 
 
 
   // Charger versements
+
   Future<void> fetchVersements() async {
 
+
     try {
+
 
       _setLoading(true);
 
 
-      _versements =
+
+      final data =
           await _service.fetchVersements();
+
+
+
+
+      _versements =
+          data
+              .map<Versement>(
+                (json) =>
+                    Versement.fromJson(json),
+              )
+              .toList();
+
 
 
       _error = null;
 
 
+
     } catch(e){
+
 
       _error = e.toString();
 
 
+
     } finally {
+
 
       _setLoading(false);
 
+
     }
+
+
   }
 
 
 
-  // Charger détail versement
+
+
+
+
+
+  // Détail versement
+
   Future<void> fetchVersementDetail(
+
     int versementId,
+
   ) async {
 
+
+
     try {
+
 
       _setLoading(true);
 
 
-      _detail =
+
+      final data =
           await _service.fetchVersementDetail(
             versementId,
           );
 
 
+
+      _detail =
+          Versement.fromJson(data);
+
+
+
       _error = null;
+
 
 
     } catch(e){
 
+
       _error = e.toString();
+
 
 
     } finally {
 
+
       _setLoading(false);
 
+
     }
+
   }
+
+
+
+
 
 
 
@@ -103,6 +177,8 @@ class VersementProvider extends ChangeNotifier {
 
 
 
+
+
   void clearError(){
 
     _error = null;
@@ -110,5 +186,6 @@ class VersementProvider extends ChangeNotifier {
     notifyListeners();
 
   }
+
 
 }

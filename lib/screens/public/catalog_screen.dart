@@ -13,6 +13,7 @@ import '../../widgets/produit_card.dart';
 import '../../widgets/categorie_card.dart';
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/app_card.dart';
+import '../../providers/panier_article_provider.dart';
 
 class CatalogScreen extends StatefulWidget {
   const CatalogScreen({super.key});
@@ -180,11 +181,74 @@ class _CatalogScreenState extends State<CatalogScreen> {
                           final Produit produit = produits[index];
 
                           return ProduitCard(
-                            produit: produit,
-                            onTap: () {
-                              context.push("${AppRoutes.produit}/${produit.id}", extra: produit);
-                            },
-                          );
+
+  produit: produit,
+
+
+  onTap: () {
+
+    context.push(
+      "${AppRoutes.produit}/${produit.id}",
+      extra: produit,
+    );
+
+  },
+
+
+  onAddCart: () async {
+
+
+    final success =
+        await context
+            .read<PanierArticleProvider>()
+            .ajouterArticle(
+
+              produitId: produit.id,
+
+              quantite: 1,
+
+            );
+
+
+
+    if(!context.mounted) return;
+
+
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+
+          SnackBar(
+
+            content: Text(
+
+              success
+
+              ? "${produit.nom} ajouté au panier"
+
+              : "Erreur lors de l'ajout",
+
+            ),
+
+          ),
+
+        );
+
+
+  },
+
+
+
+  onReview: () {
+
+    context.push(
+      AppRoutes.avisProduit,
+      extra: produit,
+    );
+
+  },
+
+);
                         },
                         childCount: produits.length,
                       ),

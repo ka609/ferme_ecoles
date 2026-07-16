@@ -1,87 +1,135 @@
 import 'package:dio/dio.dart';
 
 import '../core/constants/api_constants.dart';
+import '../models/panier_model.dart';
 import 'api_service.dart';
 
+
 class PanierService {
-  final ApiService _api = ApiService.instance;
 
-  Future<List<dynamic>> fetchPanier() async {
+
+  final ApiService _api =
+      ApiService.instance;
+
+
+
+
+
+  // Liste des paniers
+
+  Future<List<Panier>> fetchPaniers() async {
+
+
     try {
-      final response = await _api.get(
-        ApiConstants.paniers,
-      );
 
-      return response.data as List<dynamic>;
-    } on DioException catch (e) {
+
+      final response =
+          await _api.get(
+            ApiConstants.paniers,
+          );
+
+
+
+      return (response.data as List)
+
+          .map(
+            (json) =>
+                Panier.fromJson(json),
+          )
+
+          .toList();
+
+
+
+    } on DioException catch(e) {
+
+
       throw ApiException.fromDioError(e);
+
     }
+
+
   }
 
-  Future<Map<String, dynamic>> ajouterAuPanier({
-    required int produitId,
-    required int quantite,
-  }) async {
-    try {
-      final response = await _api.post(
-        ApiConstants.ajouterPanier,
-        data: {
-          'produit': produitId,
-          'quantite': quantite,
-        },
-      );
 
-      return response.data as Map<String, dynamic>;
-    } on DioException catch (e) {
-      throw ApiException.fromDioError(e);
-    }
-  }
 
-  Future<List<dynamic>> fetchArticlesPanier() async {
-    try {
-      final response = await _api.get(
-        ApiConstants.panierArticles,
-      );
 
-      return response.data as List<dynamic>;
-    } on DioException catch (e) {
-      throw ApiException.fromDioError(e);
-    }
-  }
 
-  Future<Map<String, dynamic>> updateQuantiteArticle({
-    required int articleId,
-    required int quantite,
-  }) async {
-    try {
-      final response = await _api.patch(
-        ApiConstants.detail(
-          ApiConstants.panierArticles,
-          articleId,
-        ),
-        data: {
-          'quantite': quantite,
-        },
-      );
 
-      return response.data as Map<String, dynamic>;
-    } on DioException catch (e) {
-      throw ApiException.fromDioError(e);
-    }
-  }
 
-  Future<void> supprimerArticle(
-    int articleId,
+  // Détail panier
+
+  Future<Panier> fetchPanierDetail(
+    int panierId,
   ) async {
+
+
     try {
-      await _api.delete(
-        ApiConstants.detail(
-          ApiConstants.panierArticles,
-          articleId,
-        ),
+
+
+      final response =
+          await _api.get(
+
+            ApiConstants.detail(
+              ApiConstants.paniers,
+              panierId,
+            ),
+
+          );
+
+
+
+      return Panier.fromJson(
+        response.data,
       );
-    } on DioException catch (e) {
+
+
+
+    } on DioException catch(e) {
+
+
       throw ApiException.fromDioError(e);
+
     }
+
   }
+
+
+
+
+
+
+
+
+  // Supprimer panier
+
+  Future<void> deletePanier(
+    int panierId,
+  ) async {
+
+
+    try {
+
+
+      await _api.delete(
+
+        ApiConstants.detail(
+          ApiConstants.paniers,
+          panierId,
+        ),
+
+      );
+
+
+
+    } on DioException catch(e) {
+
+
+      throw ApiException.fromDioError(e);
+
+    }
+
+  }
+
+
 }

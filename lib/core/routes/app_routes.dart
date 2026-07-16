@@ -21,6 +21,10 @@ class AppRoutes {
 
   static const panier = "/panier";
 
+  static const panierDetail = "/panier-detail";
+
+static const String panierArticles = "/panier/:id/articles";
+  
   static const commandes = "/commandes";
 
   static const commandeDetail =
@@ -118,5 +122,15 @@ static const reponsesForum =
 
   //paiement
   static const paiement = "/paiement";
+
+// Avis produit
+static const avisProduit = "/produit/:id/avis";
+
+
+static String avisProduitPath(int id) {
+  return "/produit/$id/avis";
+}
+
+static const versements = "/versements";
 
 }

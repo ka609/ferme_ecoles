@@ -9,9 +9,13 @@ import '../../screens/public/produit_detail_screen.dart';
 
 import '../../screens/client/client_shell.dart';
 import '../../screens/client/panier_screen.dart';
+import '../../screens/client/panier_detail_screen.dart';
+import '../../screens/client/panier_article_screen.dart';
 import '../../screens/client/commande_screen.dart';
 import '../../screens/client/suivi_commande_screen.dart';
 import '../../screens/client/commande_detail_screen.dart';
+import '../../screens/client/paiement_screen.dart';
+
 
 import '../../screens/shared/profile_screen.dart';
 
@@ -288,6 +292,79 @@ final List<RouteBase> clientRoutes = [
     },
 
   ),
+
+  GoRoute(
+  path: AppRoutes.panierArticles,
+  builder: (context, state) {
+
+    final panierId =
+        int.parse(
+          state.pathParameters["id"]!,
+        );
+
+
+    return PanierArticlesScreen(
+      panierId: panierId,
+    );
+
+  },
+),
+
+  GoRoute(
+
+  path: AppRoutes.paiement,
+
+  builder: (
+
+    context,
+
+    state,
+
+  ){
+
+    final commande =
+        state.extra;
+
+
+    if(commande is! Commande){
+
+      return const Scaffold(
+
+        body:
+            Center(
+              child:
+                  Text(
+                    "Commande introuvable",
+                  ),
+            ),
+
+      );
+
+    }
+
+
+    return PaiementScreen(
+      commande: commande,
+    );
+
+  },
+
+),
+
+GoRoute(
+  path: "/panier-detail/:id",
+  builder: (context, state){
+
+    final id = int.parse(
+      state.pathParameters["id"]!,
+    );
+
+    return PanierDetailScreen(
+      panierId: id,
+    );
+
+  },
+),
 
 
 ];

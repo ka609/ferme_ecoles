@@ -1,169 +1,243 @@
 import 'package:flutter/foundation.dart';
 
+import '../models/panier_model.dart';
 import '../services/panier_service.dart';
 
-class PanierProvider extends ChangeNotifier {
-  final PanierService _service = PanierService();
 
-  List<dynamic> _paniers = [];
-  List<dynamic> _articles = [];
+class PanierProvider extends ChangeNotifier {
+
+
+  final PanierService _service =
+      PanierService();
+
+
+
+  List<Panier> _paniers = [];
+
+  Panier? _detail;
+
 
   bool _isLoading = false;
+
   String? _error;
 
-  List<dynamic> get paniers => _paniers;
 
-  List<dynamic> get articles => _articles;
 
-  bool get isLoading => _isLoading;
 
-  String? get error => _error;
 
-  // Total panier
-  double get total {
-    return _articles.fold(
-      0,
-      (somme, article) {
-        final prix =
-            double.tryParse(
-                  article["prix"].toString(),
-                ) ??
-                0;
+  List<Panier> get paniers =>
+      _paniers;
 
-        final quantite =
-            int.tryParse(
-                  article["quantite"].toString(),
-                ) ??
-                0;
 
-        return somme + (prix * quantite);
-      },
-    );
-  }
 
-  // Charger panier
-  Future<void> fetchPanier() async {
+  Panier? get detail =>
+      _detail;
+
+
+
+  bool get isLoading =>
+      _isLoading;
+
+
+
+  String? get error =>
+      _error;
+
+
+
+
+
+
+
+  // Charger les paniers du client
+
+  Future<void> fetchPaniers() async {
+
     try {
+
       _setLoading(true);
 
-      _paniers = await _service.fetchPanier();
+
+      _paniers =
+          await _service.fetchPaniers();
+
+
 
       _error = null;
-    } catch (e) {
+
+
+      notifyListeners();
+
+
+    } catch(e) {
+
+
       _error = e.toString();
+
+
+      notifyListeners();
+
+
     } finally {
+
+
       _setLoading(false);
+
+
     }
+
   }
 
-  // Charger articles panier
-  Future<void> fetchArticlesPanier() async {
+
+
+
+
+
+
+
+  // Charger détail panier
+
+  Future<void> fetchPanierDetail(
+    int panierId,
+  ) async {
+
+
     try {
+
+
       _setLoading(true);
 
-      _articles = await _service.fetchArticlesPanier();
+
+
+      _detail =
+          await _service.fetchPanierDetail(
+            panierId,
+          );
+
+
 
       _error = null;
-    } catch (e) {
+
+
+      notifyListeners();
+
+
+
+    } catch(e) {
+
+
       _error = e.toString();
+
+
+      notifyListeners();
+
+
     } finally {
+
+
       _setLoading(false);
+
+
     }
+
   }
 
-  // Ajouter article
-  Future<bool> ajouterAuPanier({
-    required int produitId,
-    required int quantite,
-  }) async {
+
+
+
+
+
+
+
+
+  // Supprimer panier
+
+  Future<bool> deletePanier(
+    int panierId,
+  ) async {
+
+
     try {
-      final article = await _service.ajouterAuPanier(
-        produitId: produitId,
-        quantite: quantite,
+
+
+      await _service.deletePanier(
+        panierId,
       );
 
-      _articles.add(article);
+
+
+      _paniers.removeWhere(
+        (panier) =>
+            panier.id == panierId,
+      );
+
+
 
       notifyListeners();
 
+
+
       return true;
-    } catch (e) {
+
+
+
+    } catch(e) {
+
+
+
       _error = e.toString();
 
-      return false;
-    }
-  }
-
-  // Modifier quantité
-  Future<bool> updateQuantiteArticle({
-    required int articleId,
-    required int quantite,
-  }) async {
-    try {
-      final article = await _service.updateQuantiteArticle(
-        articleId: articleId,
-        quantite: quantite,
-      );
-
-      final index = _articles.indexWhere(
-        (item) => item["id"] == articleId,
-      );
-
-      if (index != -1) {
-        _articles[index] = article;
-      }
 
       notifyListeners();
 
-      return true;
-    } catch (e) {
-      _error = e.toString();
 
       return false;
+
+
     }
+
+
   }
 
-  // Supprimer article
-  Future<bool> supprimerArticle(int articleId) async {
-    try {
-      await _service.supprimerArticle(articleId);
 
-      _articles.removeWhere(
-        (item) => item["id"] == articleId,
-      );
 
-      notifyListeners();
 
-      return true;
-    } catch (e) {
-      _error = e.toString();
 
-      return false;
-    }
-  }
 
-  // Mise à jour chargement
-  void _setLoading(bool value) {
+
+
+
+
+  void _setLoading(
+    bool value,
+  ){
+
     _isLoading = value;
 
     notifyListeners();
+
   }
 
-  // Nettoyer erreur
-  void clearError() {
-    _error = null;
 
-    notifyListeners();
-  }
 
-  // Réinitialiser données
-  void clear() {
+
+
+
+
+
+  void clear(){
+
     _paniers.clear();
 
-    _articles.clear();
+    _detail = null;
 
     _error = null;
 
+
     notifyListeners();
+
   }
+
+
+
 }

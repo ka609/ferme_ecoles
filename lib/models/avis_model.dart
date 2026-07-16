@@ -1,5 +1,4 @@
 class Avis {
-  // Avis model
   final int id;
 
   final int produit;
@@ -16,8 +15,7 @@ class Avis {
 
   final DateTime? date;
 
-
-  Avis({
+  const Avis({
     required this.id,
     required this.produit,
     this.produitNom,
@@ -28,22 +26,27 @@ class Avis {
     this.date,
   });
 
-
   factory Avis.fromJson(Map<String, dynamic> json) {
     return Avis(
-      id: json["id"],
-      produit: json["produit"],
+      id: json["id"] ?? 0,
+
+      produit: json["produit"] ?? 0,
+
       produitNom: json["produit_nom"],
-      client: json["client"],
+
+      client: json["client"] ?? 0,
+
       clientNom: json["client_nom"],
+
       note: json["note"] ?? 0,
+
       commentaire: json["commentaire"] ?? "",
+
       date: json["date"] != null
-          ? DateTime.parse(json["date"])
+          ? DateTime.tryParse(json["date"].toString())
           : null,
     );
   }
-
 
   Map<String, dynamic> toJson() {
     return {

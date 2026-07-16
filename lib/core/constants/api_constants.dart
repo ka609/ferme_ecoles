@@ -22,7 +22,7 @@ class ApiConstants {
 
   static const String paniers = "/paniers/";
   static const String panierArticles = "/panier-articles/";
-  static const String ajouterPanier = "/paniers/ajouter/";
+  
 
   static const String commandes = "/commandes/";
 

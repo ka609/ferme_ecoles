@@ -189,6 +189,14 @@ class _ProducteurDashboardState extends State<ProducteurDashboard> {
                         AppRoutes.formationsProducteur,
                    ),
             ),
+            _NavTile(
+                icon: Icons.account_balance_wallet_outlined,
+                title: "Versements",
+                subtitle: "Consulter mes revenus",
+                onTap: () => context.push(
+                        AppRoutes.versements,
+               ),
+           ),
 
               const SizedBox(height: 24),
 

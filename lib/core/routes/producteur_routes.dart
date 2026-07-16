@@ -12,6 +12,8 @@ import '../../screens/producteur/certification_screen.dart';
 import '../../screens/producteur/statistiques_screen.dart';
 import '../../screens/producteur/producteur_commandes_screen.dart';
 import '../../screens/producteur/formations_screen.dart';
+import '../../screens/producteur/versement_screen.dart';
+
 
 
 
@@ -206,6 +208,21 @@ final List<RouteBase> producteurRoutes = [
     },
 
   ),
+
+  GoRoute(
+
+  path: AppRoutes.versements,
+
+  builder: (
+    context,
+    state,
+  ){
+
+    return const VersementScreen();
+
+  },
+
+),
 
 
 ];

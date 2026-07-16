@@ -6,7 +6,7 @@ class PanierArticle {
 
   final String? produitNom;
 
-  final int quantite;
+  final double quantite;
 
   final double prix;
 
@@ -30,7 +30,9 @@ class PanierArticle {
       id: json["id"],
       produit: json["produit"],
       produitNom: json["produit_nom"],
-      quantite: json["quantite"] ?? 0,
+      quantite: double.tryParse(
+            json["quantite"].toString(),
+         ) ?? 0,
       prix: double.tryParse(
             json["prix"].toString(),
           ) ??

@@ -1,20 +1,23 @@
 import 'package:flutter/foundation.dart';
 
+import '../models/paiement_model.dart';
 import '../services/paiement_service.dart';
 
 
 class PaiementProvider extends ChangeNotifier {
+
 
   final PaiementService _service =
       PaiementService();
 
 
 
-  List<dynamic> _paiements = [];
+  List<Paiement> _paiements = [];
 
-  Map<String, dynamic>? _paiementDetail;
+  Paiement? _paiementDetail;
 
-  Map<String, dynamic>? _paiementCommande;
+  Paiement? _paiementCommande;
+
 
 
   bool _isLoading = false;
@@ -23,22 +26,35 @@ class PaiementProvider extends ChangeNotifier {
 
 
 
-  List<dynamic> get paiements => _paiements;
+  List<Paiement> get paiements =>
+      _paiements;
 
-  Map<String, dynamic>? get paiementDetail =>
+
+
+  Paiement? get paiementDetail =>
       _paiementDetail;
 
-  Map<String, dynamic>? get paiementCommande =>
+
+
+  Paiement? get paiementCommande =>
       _paiementCommande;
 
 
-  bool get isLoading => _isLoading;
 
-  String? get error => _error;
+  bool get isLoading =>
+      _isLoading;
 
 
 
-  // Charger paiements
+  String? get error =>
+      _error;
+
+
+
+
+
+  // Charger tous les paiements
+
   Future<void> fetchPaiements() async {
 
     try {
@@ -46,11 +62,24 @@ class PaiementProvider extends ChangeNotifier {
       _setLoading(true);
 
 
-      _paiements =
+
+      final data =
           await _service.fetchPaiements();
 
 
+
+      _paiements =
+          data
+              .map<Paiement>(
+                (json) =>
+                    Paiement.fromJson(json),
+              )
+              .toList();
+
+
+
       _error = null;
+
 
 
     } catch(e){
@@ -58,32 +87,55 @@ class PaiementProvider extends ChangeNotifier {
       _error = e.toString();
 
 
+
     } finally {
 
       _setLoading(false);
 
     }
+
   }
 
 
 
-  // Charger paiement commande
+
+
+
+
+  // Charger paiement d'une commande
+
   Future<void> fetchPaiementByCommande(
+
     int commandeId,
+
   ) async {
 
+
     try {
+
 
       _setLoading(true);
 
 
-      _paiementCommande =
+
+      final data =
           await _service.fetchPaiementByCommande(
             commandeId,
           );
 
 
+
+      if(data.isNotEmpty){
+
+        _paiementCommande =
+            Paiement.fromJson(data);
+
+      }
+
+
+
       _error = null;
+
 
 
     } catch(e){
@@ -96,80 +148,144 @@ class PaiementProvider extends ChangeNotifier {
       _setLoading(false);
 
     }
+
   }
 
 
 
+
+
+
+
+
   // Créer paiement
-  // Créer paiement
-Future<bool> createPaiement({
-  required int commandeId,
-  required double montant,
-  required String moyen,
-  String? reference,
-}) async {
-  try {
-    _setLoading(true);
 
-    await _service.createPaiement(
-      commandeId: commandeId,
-      montant: montant,
-      moyen: moyen,
-      reference: reference,
-    );
+  Future<bool> createPaiement({
 
-    await fetchPaiements();
+    required int commandeId,
 
-    return true;
+    required double montant,
 
-  } catch (e) {
-    _error = e.toString();
+    required String moyen,
 
-    return false;
-
-  } finally {
-    _setLoading(false);
-  }
-}
+    String? reference,
 
 
-  // Charger détail paiement
-  Future<void> fetchPaiementDetail(
-    int paiementId,
-  ) async {
+  }) async {
+
 
     try {
+
 
       _setLoading(true);
 
 
-      _paiementDetail =
+
+      await _service.createPaiement(
+
+        commandeId: commandeId,
+
+        montant: montant,
+
+        moyen: moyen,
+
+        reference: reference,
+
+      );
+
+
+
+      await fetchPaiements();
+
+
+
+      return true;
+
+
+
+    } catch(e){
+
+
+      _error = e.toString();
+
+
+      return false;
+
+
+
+    } finally {
+
+
+      _setLoading(false);
+
+
+    }
+
+  }
+
+
+
+
+
+
+
+  // Détail paiement
+
+  Future<void> fetchPaiementDetail(
+
+    int paiementId,
+
+  ) async {
+
+
+    try {
+
+
+      _setLoading(true);
+
+
+
+      final data =
           await _service.fetchPaiementDetail(
             paiementId,
           );
 
 
+
+      _paiementDetail =
+          Paiement.fromJson(data);
+
+
+
       _error = null;
+
 
 
     } catch(e){
 
+
       _error = e.toString();
+
 
 
     } finally {
 
+
       _setLoading(false);
 
+
     }
+
+
   }
 
 
 
-  // Mise à jour chargement
-  void _setLoading(
-    bool value,
-  ){
+
+
+
+
+  void _setLoading(bool value){
 
     _isLoading = value;
 
@@ -179,7 +295,8 @@ Future<bool> createPaiement({
 
 
 
-  // Nettoyer erreur
+
+
   void clearError(){
 
     _error = null;
@@ -190,7 +307,10 @@ Future<bool> createPaiement({
 
 
 
-  // Réinitialiser
+
+
+
+
   void clear(){
 
     _paiements.clear();
@@ -205,5 +325,6 @@ Future<bool> createPaiement({
     notifyListeners();
 
   }
+
 
 }

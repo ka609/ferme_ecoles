@@ -1,5 +1,6 @@
 class Versement {
-  // Versement model
+
+
   final int id;
 
   final int producteur;
@@ -23,84 +24,136 @@ class Versement {
   final DateTime? dateVersement;
 
 
+
   Versement({
+
     required this.id,
+
     required this.producteur,
+
     this.producteurNom,
+
     required this.commande,
+
     this.commandeNumero,
+
     required this.montant,
+
     required this.commissionPlateforme,
+
     required this.montantNet,
+
     required this.statut,
+
     this.date,
+
     this.dateVersement,
+
   });
+
+
+
 
 
   factory Versement.fromJson(
     Map<String, dynamic> json,
-  ) {
+  ){
+
     return Versement(
-      id: json["id"],
+
+      id:
+          json["id"] ?? 0,
+
+
 
       producteur:
-          json["producteur"],
+          json["producteur"] ?? 0,
+
+
 
       producteurNom:
           json["producteur_nom"],
 
+
+
       commande:
-          json["commande"],
+          json["commande"] ?? 0,
+
+
 
       commandeNumero:
           json["commande_numero"],
 
+
+
       montant:
           double.tryParse(
-            json["montant"].toString(),
+            json["montant"]?.toString() ?? "0",
           ) ??
           0,
+
+
 
       commissionPlateforme:
           double.tryParse(
-            json["commission_plateforme"]
-                .toString(),
+            json["commission_plateforme"]?.toString() ?? "0",
           ) ??
           0,
 
+
+
       montantNet:
           double.tryParse(
-            json["montant_net"].toString(),
+            json["montant_net"]?.toString() ?? "0",
           ) ??
           0,
+
+
 
       statut:
           json["statut"] ?? "",
 
+
+
       date:
           json["date"] != null
-              ? DateTime.parse(
+              ? DateTime.tryParse(
                   json["date"],
                 )
               : null,
 
+
+
       dateVersement:
           json["date_versement"] != null
-              ? DateTime.parse(
+              ? DateTime.tryParse(
                   json["date_versement"],
                 )
               : null,
+
     );
+
   }
 
 
-  Map<String, dynamic> toJson() {
+
+
+
+  Map<String,dynamic> toJson(){
+
     return {
+
       "producteur": producteur,
+
       "commande": commande,
+
       "montant": montant,
+
       "statut": statut,
+
     };
+
   }
+
+
 }

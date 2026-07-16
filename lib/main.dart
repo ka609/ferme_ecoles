@@ -30,6 +30,8 @@ import 'providers/suivi_formation_provider.dart';
 import 'providers/sujet_forum_provider.dart';
 import 'providers/versement_provider.dart';
 import 'providers/statistique_provider.dart';
+import 'providers/panier_article_provider.dart';
+
 
 
 import 'core/routes/app_router.dart';
@@ -161,6 +163,11 @@ class FermeEcoleApp extends StatelessWidget {
           create: (_) => PanierProvider(),
 
         ),
+
+        ChangeNotifierProvider(
+          create: (_) => PanierArticleProvider(),
+        ),
+
 
 
 
