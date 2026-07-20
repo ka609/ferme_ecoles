@@ -1,521 +1,212 @@
 import 'package:flutter/material.dart';
 
 import '../../models/produit_model.dart';
+import 'common/app_button.dart';
 import 'common/app_card.dart';
-
+import 'common/status_badge.dart';
 
 class ProduitCard extends StatelessWidget {
-
   final Produit produit;
-
   final VoidCallback? onTap;
-
   final VoidCallback? onAddCart;
-
   final VoidCallback? onReview;
-
   final List<Widget>? actions;
 
-
   const ProduitCard({
-
     super.key,
-
     required this.produit,
-
     this.onTap,
-
     this.onAddCart,
-
     this.onReview,
-
     this.actions,
-
   });
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
-
+    final theme = Theme.of(context);
 
     return AppCard(
-
-      margin: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 8,
-      ),
-
       padding: EdgeInsets.zero,
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // IMAGE
 
-
-      child: InkWell(
-
-        borderRadius: BorderRadius.circular(16),
-
-        onTap: onTap,
-
-
-        child: Column(
-
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-
-
-          children: [
-
-
-
-            Stack(
-
-              children: [
-
-
-                ClipRRect(
-
-                  borderRadius:
-                      const BorderRadius.vertical(
-                        top: Radius.circular(16),
-                      ),
-
-
-                  child: SizedBox(
-
-                    height: 170,
-
-                    width: double.infinity,
-
-
-                    child: produit.image != null
-
-                        ? Image.network(
-
-                            produit.image!,
-
-                            fit: BoxFit.cover,
-
-                          )
-
-                        : Container(
-
-                            color: Colors.green
-                                .withValues(alpha: 0.15),
-
-
-                            child: const Icon(
-
-                              Icons.eco,
-
-                              size: 50,
-
-                            ),
-
-                          ),
-
-                  ),
-
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
                 ),
+                child: AspectRatio(
+                  aspectRatio: 1.2,
+                  child: Image.network(
+                    produit.image ?? "",
+                    fit: BoxFit.cover,
+                    loadingBuilder: (
+                      context,
+                      child,
+                      loadingProgress,
+                    ) {
+                      if (loadingProgress == null) {
+                        return child;
+                      }
 
-
-
-
-
-                Positioned(
-
-                  top: 10,
-
-                  right: 10,
-
-
-                  child: Container(
-
-                    padding:
-                        const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
                         ),
-
-
-                    decoration: BoxDecoration(
-
-                      color: produit.disponible
-                          ? Colors.green
-                          : Colors.red,
-
-
-                      borderRadius:
-                          BorderRadius.circular(20),
-
-                    ),
-
-
-                    child: Text(
-
-                      produit.disponible
-                          ? "Disponible"
-                          : "Rupture",
-
-
-                      style:
-                          const TextStyle(
-
-                            color: Colors.white,
-
-                            fontSize: 12,
-
-                            fontWeight:
-                                FontWeight.bold,
-
-                          ),
-
-                    ),
-
+                      );
+                    },
+                    errorBuilder: (
+                      context,
+                      error,
+                      stackTrace,
+                    ) {
+                      return Container(
+                        color: Colors.grey.shade100,
+                        alignment: Alignment.center,
+                        child: const Icon(
+                          Icons.eco_outlined,
+                          size: 45,
+                          color: Colors.grey,
+                        ),
+                      );
+                    },
                   ),
-
                 ),
-
-
-              ],
-
-            ),
-
-
-
-
-
-            Padding(
-
-              padding:
-                  const EdgeInsets.all(14),
-
-
-              child: Column(
-
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
-
-
-                children: [
-
-
-
-                  Text(
-
-                    produit.nom,
-
-                    maxLines: 1,
-
-                    overflow:
-                        TextOverflow.ellipsis,
-
-
-                    style:
-                        const TextStyle(
-
-                          fontSize: 17,
-
-                          fontWeight:
-                              FontWeight.bold,
-
-                        ),
-
-                  ),
-
-
-
-
-
-                  const SizedBox(height: 6),
-
-
-
-
-
-                  Row(
-
-                    children: [
-
-
-                      const Icon(
-
-                        Icons.person_outline,
-
-                        size: 16,
-
-                      ),
-
-
-                      const SizedBox(width: 5),
-
-
-                      Expanded(
-
-                        child: Text(
-
-                          produit.producteurNom ??
-                              "Producteur",
-
-                          maxLines: 1,
-
-                          overflow:
-                              TextOverflow.ellipsis,
-
-                          style:
-                              Theme.of(context)
-                                  .textTheme
-                                  .bodySmall,
-
-                        ),
-
-                      ),
-
-                    ],
-
-                  ),
-
-
-
-
-
-                  const SizedBox(height: 10),
-
-
-
-
-
-                  Row(
-
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-
-
-                    children: [
-
-
-                      Column(
-
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
-
-
-                        children: [
-
-
-                          const Text(
-                            "Prix",
-                            style:
-                                TextStyle(
-                                  fontSize: 12,
-                                ),
-                          ),
-
-
-                          Text(
-
-                            "${produit.prix.toStringAsFixed(0)} FCFA",
-
-                            style:
-                                const TextStyle(
-
-                                  fontSize: 16,
-
-                                  fontWeight:
-                                      FontWeight.bold,
-
-                                ),
-
-                          ),
-
-
-                        ],
-
-                      ),
-
-
-
-
-
-                      Column(
-
-                        crossAxisAlignment:
-                            CrossAxisAlignment.end,
-
-
-                        children: [
-
-
-                          const Text(
-                            "Stock",
-                            style:
-                                TextStyle(
-                                  fontSize: 12,
-                                ),
-                          ),
-
-
-                          Text(
-
-                            "${produit.stock.toStringAsFixed(0)} ${produit.unite}",
-
-                            style:
-                                const TextStyle(
-
-                                  fontWeight:
-                                      FontWeight.w600,
-
-                                ),
-
-                          ),
-
-
-                        ],
-
-                      ),
-
-
-
-                    ],
-
-                  ),
-
-
-
-
-
-                  const SizedBox(height: 10),
-
-
-
-
-
-                  Row(
-
-                children: [
-
-                 const Icon(
-                   Icons.star,
-                    size: 18,
-                     color: Colors.amber,
-                   ),
-
-
-                   const SizedBox(width: 4),
-
-
-             Text(
-                  "${produit.noteMoyenne.toStringAsFixed(1)}",
-             ),
-
-
-    Text(
-      " (${produit.nombreAvis})",
-      style:
-          Theme.of(context)
-              .textTheme
-              .bodySmall,
-    ),
-
-
-
-    const Spacer(),
-
-
-
-    // Icône avis toujours visible
-
-    IconButton(
-
-      tooltip:
-          "Donner un avis",
-
-      onPressed:
-          onReview,
-
-      icon:
-          const Icon(
-            Icons.rate_review_outlined,
+              ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: StatusBadge(
+                  statut: produit.disponible ? "Disponible" : "Rupture",
+                ),
+              ),
+            ],
           ),
 
-    ),
+          // INFORMATIONS
 
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // NOM PRODUIT
 
-
-    // Actions supplémentaires producteur/admin
-
-    if(actions != null)
-
-      ...actions!,
-
-
-  ],
-
-),
-
-
-
-
-
-                  const SizedBox(height: 8),
-
-
-
-
-
-                  SizedBox(
-
-                    width: double.infinity,
-
-
-                    child: FilledButton.icon(
-
-                      onPressed:
-                          produit.disponible && produit.stock > 0
-                              ? onAddCart
-                              : null,
-
-
-                      icon:
-                          const Icon(
-
-                            Icons.shopping_cart_outlined,
-
-                          ),
-
-
-                      label:
-                          Text(
-
-                            produit.disponible && produit.stock > 0
-
-                                ? "Ajouter au panier"
-
-                                : "Indisponible",
-
-                          ),
-
-                    ),
-
+                Text(
+                  produit.nom,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
                   ),
+                ),
 
+                const SizedBox(height: 6),
 
+                // PRODUCTEUR
 
+                Row(
+                  children: [
+                    Icon(
+                      Icons.person_outline,
+                      size: 15,
+                      color: theme.colorScheme.primary,
+                    ),
+                    const SizedBox(width: 5),
+                    Expanded(
+                      child: Text(
+                        produit.producteurNom ?? "Producteur",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 8),
+
+                // PRIX + AVIS
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        "${produit.prix.toStringAsFixed(0)} FCFA",
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    InkWell(
+                      onTap: onReview,
+                      borderRadius: BorderRadius.circular(20),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            produit.nombreAvis > 0
+                                ? Icons.star
+                                : Icons.star_outline,
+                            size: 16,
+                            color: Colors.orange,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            produit.nombreAvis > 0
+                                ? "${produit.noteMoyenne.toStringAsFixed(1)} (${produit.nombreAvis})"
+                                : "Avis",
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 10),
+
+                // AJOUT PANIER
+
+                SizedBox(
+                  width: double.infinity,
+                  child: AppButton(
+                    text: produit.disponible && produit.stock > 0
+                        ? "Ajouter"
+                        : "Rupture",
+                    onPressed: produit.disponible && produit.stock > 0
+                        ? onAddCart
+                        : null,
+                  ),
+                ),
+
+                // ACTIONS SUPPLEMENTAIRES
+
+                if (actions != null && actions!.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    alignment: WrapAlignment.end,
+                    children: actions!,
+                  ),
                 ],
-
-              ),
-
+              ],
             ),
-
-
-          ],
-
-        ),
-
+          ),
+        ],
       ),
-
     );
-
   }
-
 }

@@ -135,6 +135,27 @@ class Produit {
   });
 
 
+  // Récupérer l'identifiant de la catégorie
+
+  int? get categorieId {
+
+    if (categorie is int) {
+
+      return categorie;
+
+    }
+
+
+    if (categorie is Map) {
+
+      return categorie["id"];
+
+    }
+
+
+    return null;
+
+  }
 
 
 

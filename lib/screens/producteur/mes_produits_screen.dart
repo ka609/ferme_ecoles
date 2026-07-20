@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../core/routes/app_routes.dart';
 
 import '../../providers/produit_provider.dart';
 import '../../providers/categorie_provider.dart';
 
-import '../../widgets/produit_card.dart';
+import '../../widgets/producteur_produit_card.dart';
+
 
 
 class MesProduitsScreen extends StatefulWidget {
@@ -38,6 +40,8 @@ class _MesProduitsScreenState
 
 
 
+
+
   @override
   void initState() {
 
@@ -62,6 +66,8 @@ class _MesProduitsScreenState
 
 
 
+
+
   @override
   void dispose() {
 
@@ -72,6 +78,9 @@ class _MesProduitsScreenState
     super.dispose();
 
   }
+
+
+
 
 
 
@@ -119,7 +128,9 @@ class _MesProduitsScreenState
         content: Text(
 
           success
+
               ? "Catégorie ajoutée"
+
               : "Erreur ajout catégorie",
 
         ),
@@ -135,6 +146,9 @@ class _MesProduitsScreenState
     _descriptionCategorieController.clear();
 
   }
+
+
+
 
 
 
@@ -157,69 +171,72 @@ class _MesProduitsScreenState
               ),
 
 
+
           content:
 
-              Column(
+          Column(
 
-                mainAxisSize:
-                    MainAxisSize.min,
-
-
-                children:[
+            mainAxisSize:
+                MainAxisSize.min,
 
 
-                  TextField(
-
-                    controller:
-                        _nomCategorieController,
+            children:[
 
 
-                    decoration:
-                        const InputDecoration(
+              TextField(
 
-                      labelText:
-                          "Nom catégorie",
-
-                      border:
-                          OutlineInputBorder(),
-
-                    ),
-
-                  ),
+                controller:
+                    _nomCategorieController,
 
 
+                decoration:
+                    const InputDecoration(
 
-                  const SizedBox(height:16),
+                  labelText:
+                      "Nom catégorie",
 
+                  border:
+                      OutlineInputBorder(),
 
-
-                  TextField(
-
-                    controller:
-                        _descriptionCategorieController,
-
-
-                    maxLines:
-                        3,
-
-
-                    decoration:
-                        const InputDecoration(
-
-                      labelText:
-                          "Description",
-
-                      border:
-                          OutlineInputBorder(),
-
-                    ),
-
-                  ),
-
-
-                ],
+                ),
 
               ),
+
+
+
+              const SizedBox(height:16),
+
+
+
+
+              TextField(
+
+                controller:
+                    _descriptionCategorieController,
+
+
+                maxLines:
+                    3,
+
+
+                decoration:
+                    const InputDecoration(
+
+                  labelText:
+                      "Description",
+
+                  border:
+                      OutlineInputBorder(),
+
+                ),
+
+              ),
+
+
+            ],
+
+          ),
+
 
 
 
@@ -234,12 +251,15 @@ class _MesProduitsScreenState
 
               },
 
+
               child:
                   const Text(
                     "Annuler",
                   ),
 
             ),
+
+
 
 
 
@@ -275,9 +295,11 @@ class _MesProduitsScreenState
 
 
 
+
+
   Future<void> _supprimerProduit(
-    int id,
-  ) async {
+      int id,
+      ) async {
 
 
     final success =
@@ -287,7 +309,7 @@ class _MesProduitsScreenState
 
 
 
-    if (!mounted) return;
+    if(!mounted) return;
 
 
 
@@ -299,8 +321,10 @@ class _MesProduitsScreenState
         content: Text(
 
           success
+
               ? "Produit supprimé"
-              : "Erreur lors de la suppression",
+
+              : "Erreur suppression",
 
         ),
 
@@ -308,7 +332,11 @@ class _MesProduitsScreenState
 
     );
 
+
   }
+
+
+
 
 
 
@@ -361,15 +389,17 @@ class _MesProduitsScreenState
 
 
 
-      floatingActionButton:
-          FloatingActionButton(
 
+
+      floatingActionButton:
+
+      FloatingActionButton(
 
         onPressed:(){
 
-
-          context.push(AppRoutes.producteurAjouterProduit);
-
+          context.push(
+              AppRoutes.producteurAjouterProduit
+          );
 
         },
 
@@ -386,9 +416,11 @@ class _MesProduitsScreenState
 
 
 
+
+
       body:
 
-          RefreshIndicator(
+      RefreshIndicator(
 
 
         onRefresh:() async{
@@ -403,9 +435,10 @@ class _MesProduitsScreenState
 
 
 
+
         child:
 
-            Consumer<ProduitProvider>(
+        Consumer<ProduitProvider>(
 
 
           builder:(context,provider,child){
@@ -417,11 +450,12 @@ class _MesProduitsScreenState
               return const Center(
 
                 child:
-                    CircularProgressIndicator(),
+                CircularProgressIndicator(),
 
               );
 
             }
+
 
 
 
@@ -432,9 +466,9 @@ class _MesProduitsScreenState
               return const Center(
 
                 child:
-                    Text(
-                      "Aucun produit disponible",
-                    ),
+                Text(
+                  "Aucun produit disponible",
+                ),
 
               );
 
@@ -445,16 +479,18 @@ class _MesProduitsScreenState
 
 
 
+
             return ListView.builder(
 
 
               padding:
-                  const EdgeInsets.all(16),
+              const EdgeInsets.all(16),
 
 
 
               itemCount:
-                  provider.mesProduits.length,
+              provider.mesProduits.length,
+
 
 
 
@@ -462,95 +498,57 @@ class _MesProduitsScreenState
 
 
                 final produit =
-                    provider.mesProduits[index];
+                provider.mesProduits[index];
 
 
 
-                return ProduitCard(
+
+                return ProducteurProduitCard(
 
 
                   produit:
+                  produit,
+
+
+
+
+
+                  onEdit:(){
+
+
+
+                    context.push(
+
+                      AppRoutes.producteurModifierProduit
+                          .replaceFirst(
+                          ':id',
+                          produit.id.toString()
+                      ),
+
+
+                      extra:
                       produit,
 
-
-
-                  onTap:(){
-
-
-                    Navigator.pushNamed(
-
-                      context,
-
-                      AppRoutes.producteurAjouterProduit.replaceFirst(':id', produit.id.toString()),
-
-                      arguments:
-                          produit,
-
                     );
+
 
 
                   },
 
 
 
-                  actions:[
 
 
-                    IconButton(
-
-                      icon:
-                          const Icon(
-                            Icons.edit,
-                          ),
+                  onDelete:(){
 
 
-                      onPressed:(){
+                    _supprimerProduit(
+                        produit.id
+                    );
 
 
-                        Navigator.pushNamed(
+                  },
 
-                          context,
-
-                          AppRoutes.producteurModifierProduit.replaceFirst(':id', produit.id.toString()),
-
-                          arguments:
-                              produit,
-
-                        );
-
-
-                      },
-
-
-                    ),
-
-
-
-
-                    IconButton(
-
-                      icon:
-                          const Icon(
-                            Icons.delete,
-                          ),
-
-
-                      onPressed:(){
-
-
-                        _supprimerProduit(
-                          produit.id,
-                        );
-
-
-                      },
-
-
-                    ),
-
-
-
-                  ],
 
 
                 );

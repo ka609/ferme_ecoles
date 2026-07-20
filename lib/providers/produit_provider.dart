@@ -25,26 +25,136 @@ class ProduitProvider extends ChangeNotifier {
   String? _error;
 
 
+  int? _categorieSelectionneeId;
+
+
+
 
 
   List<Produit> get catalogue =>
       _catalogue;
 
 
+
   List<Produit> get mesProduits =>
       _mesProduits;
+
 
 
   Produit? get produitDetail =>
       _produitDetail;
 
 
+
   bool get isLoading =>
       _isLoading;
 
 
+
   String? get error =>
       _error;
+
+
+
+  int? get categorieSelectionneeId =>
+      _categorieSelectionneeId;
+
+
+
+
+
+  // Catalogue filtré par catégorie
+
+  List<Produit> get catalogueFiltre {
+
+
+    if (_categorieSelectionneeId == null) {
+
+      return _catalogue;
+
+    }
+
+
+
+    return _catalogue.where(
+
+      (produit) {
+
+
+        if (produit.categorie is int) {
+
+
+          return produit.categorie ==
+              _categorieSelectionneeId;
+
+
+        }
+
+
+
+        if (produit.categorie is Map) {
+
+
+          return produit.categorie["id"] ==
+              _categorieSelectionneeId;
+
+
+        }
+
+
+
+        return false;
+
+
+      },
+
+
+    ).toList();
+
+
+  }
+
+
+
+
+
+
+
+  // Sélection catégorie dropdown
+
+  void selectionnerCategorie(int? categorieId) {
+
+
+    _categorieSelectionneeId =
+        categorieId;
+
+
+    notifyListeners();
+
+
+  }
+
+
+
+
+
+
+
+  // Réinitialiser filtre catégorie
+
+  void resetCategorie() {
+
+
+    _categorieSelectionneeId =
+        null;
+
+
+    notifyListeners();
+
+
+  }
+
+
 
 
 
@@ -67,12 +177,15 @@ class ProduitProvider extends ChangeNotifier {
 
 
 
-      _catalogue =
-          data
-              .map(
-                (e) => Produit.fromJson(e),
-              )
-              .toList();
+      _catalogue = data
+
+          .map(
+
+            (e) => Produit.fromJson(e),
+
+          )
+
+          .toList();
 
 
 
@@ -122,14 +235,15 @@ class ProduitProvider extends ChangeNotifier {
 
 
 
+      _mesProduits = data
 
-      _mesProduits =
-          data
-              .map(
-                (e) => Produit.fromJson(e),
-              )
-              .toList();
+          .map(
 
+            (e) => Produit.fromJson(e),
+
+          )
+
+          .toList();
 
 
 
@@ -167,9 +281,9 @@ class ProduitProvider extends ChangeNotifier {
 
   Future<void> fetchProduitDetail(
 
-    int produitId,
+      int produitId,
 
-  ) async {
+      ) async {
 
 
     try {
@@ -180,13 +294,17 @@ class ProduitProvider extends ChangeNotifier {
 
 
       final data =
-          await _service.fetchProduitDetail(
-            produitId,
-          );
+
+      await _service.fetchProduitDetail(
+
+        produitId,
+
+      );
 
 
 
       _produitDetail =
+
           Produit.fromJson(data);
 
 
@@ -221,7 +339,6 @@ class ProduitProvider extends ChangeNotifier {
 
 
 
-
   // Créer produit
 
   Future<bool> createProduit({
@@ -242,61 +359,42 @@ class ProduitProvider extends ChangeNotifier {
 
     String? image,
 
-
   }) async {
 
 
     try {
 
 
-
       final data =
-          await _service.createProduit(
+
+      await _service.createProduit(
 
 
-
-        nom:
-            nom,
+        nom: nom,
 
 
-
-        description:
-            description,
+        description: description,
 
 
-
-        prix:
-            prix,
+        prix: prix,
 
 
-
-        stock:
-            stock,
+        stock: stock,
 
 
-
-        unite:
-            unite,
+        unite: unite,
 
 
-
-        typeProduit:
-            typeProduit,
+        typeProduit: typeProduit,
 
 
-
-        categorieId:
-            categorieId,
+        categorieId: categorieId,
 
 
-
-        image:
-            image,
-
+        image: image,
 
 
       );
-
 
 
 
@@ -309,9 +407,7 @@ class ProduitProvider extends ChangeNotifier {
 
 
 
-
       notifyListeners();
-
 
 
 
@@ -319,9 +415,7 @@ class ProduitProvider extends ChangeNotifier {
 
 
 
-
     } catch(e) {
-
 
 
       _error =
@@ -334,7 +428,6 @@ class ProduitProvider extends ChangeNotifier {
 
 
       return false;
-
 
 
     }
@@ -354,28 +447,25 @@ class ProduitProvider extends ChangeNotifier {
 
   Future<bool> updateProduit(
 
-    int produitId,
+      int produitId,
 
-    Map<String,dynamic> data,
+      Map<String,dynamic> data,
 
-  ) async {
-
+      ) async {
 
 
     try {
 
 
-
       final response =
-          await _service.updateProduit(
+
+      await _service.updateProduit(
 
 
-        produitId:
-            produitId,
+        produitId: produitId,
 
 
-        data:
-            data,
+        data: data,
 
 
       );
@@ -384,20 +474,23 @@ class ProduitProvider extends ChangeNotifier {
 
 
       final produit =
-          Produit.fromJson(response);
+
+      Produit.fromJson(response);
 
 
 
 
       final index =
-          _mesProduits.indexWhere(
+
+      _mesProduits.indexWhere(
 
 
             (item) =>
-                item.id == produitId,
+
+        item.id == produitId,
 
 
-          );
+      );
 
 
 
@@ -414,15 +507,12 @@ class ProduitProvider extends ChangeNotifier {
 
 
 
-
       _produitDetail =
           produit;
 
 
 
-
       notifyListeners();
-
 
 
 
@@ -431,7 +521,6 @@ class ProduitProvider extends ChangeNotifier {
 
 
     } catch(e) {
-
 
 
       _error =
@@ -444,7 +533,6 @@ class ProduitProvider extends ChangeNotifier {
 
 
       return false;
-
 
 
     }
@@ -464,14 +552,12 @@ class ProduitProvider extends ChangeNotifier {
 
   Future<bool> deleteProduit(
 
-    int produitId,
+      int produitId,
 
-  ) async {
-
+      ) async {
 
 
     try {
-
 
 
       await _service.deleteProduit(
@@ -486,12 +572,12 @@ class ProduitProvider extends ChangeNotifier {
       _mesProduits.removeWhere(
 
 
-        (item) =>
-            item.id == produitId,
+            (item) =>
+
+        item.id == produitId,
 
 
       );
-
 
 
 
@@ -499,14 +585,11 @@ class ProduitProvider extends ChangeNotifier {
 
 
 
-
       return true;
 
 
 
-
     } catch(e) {
-
 
 
       _error =
@@ -519,7 +602,6 @@ class ProduitProvider extends ChangeNotifier {
 
 
       return false;
-
 
 
     }
@@ -537,11 +619,7 @@ class ProduitProvider extends ChangeNotifier {
 
   // Mise à jour chargement
 
-  void _setLoading(
-
-    bool value,
-
-  ){
+  void _setLoading(bool value){
 
 
     _isLoading =
@@ -567,7 +645,8 @@ class ProduitProvider extends ChangeNotifier {
   void clearError(){
 
 
-    _error = null;
+    _error =
+        null;
 
 
 
@@ -592,14 +671,15 @@ class ProduitProvider extends ChangeNotifier {
     _catalogue.clear();
 
 
-
     _mesProduits.clear();
-
 
 
     _produitDetail =
         null;
 
+
+    _categorieSelectionneeId =
+        null;
 
 
     _error =

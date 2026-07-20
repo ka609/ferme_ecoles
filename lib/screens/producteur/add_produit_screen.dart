@@ -136,7 +136,7 @@ class _AddProduitScreenState
 
 
     final result =
-        await FilePicker.pickFiles(
+        await FilePicker.platform.pickFiles(
 
       type:
           FileType.image,
