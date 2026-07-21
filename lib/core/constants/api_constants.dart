@@ -1,7 +1,7 @@
 class ApiConstants {
   ApiConstants._();
 
-  static const String baseUrl = "http://192.168.11.123:8000/api";
+  static const String baseUrl = "http://192.168.11.121:8000/api";
 
   static const String register = "/auth/register/";
   static const String login = "/auth/login/";
@@ -46,7 +46,7 @@ class ApiConstants {
 
   static const String suivisFormations = "/suivis-formations/";
 
-  static const String mediaUrl = "http://192.168.11.123:8000";
+  static const String mediaUrl = "http://192.168.11.121:8000";
 
   static String detail(
     String endpoint,
