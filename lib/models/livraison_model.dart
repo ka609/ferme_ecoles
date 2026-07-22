@@ -1,10 +1,17 @@
 class Livraison {
-  // Livraison model
   final int id;
 
   final int commande;
 
   final String? commandeNumero;
+
+  final String? clientNom;
+
+  final String? clientTelephone;
+
+  final String? adresseLivraison;
+
+  final double? montantTotal;
 
   final int? livreur;
 
@@ -27,6 +34,10 @@ class Livraison {
     required this.id,
     required this.commande,
     this.commandeNumero,
+    this.clientNom,
+    this.clientTelephone,
+    this.adresseLivraison,
+    this.montantTotal,
     this.livreur,
     this.livreurNom,
     this.societe,
@@ -47,20 +58,46 @@ class Livraison {
       commande:
           json["commande"],
 
+
       commandeNumero:
           json["commande_numero"],
+
+
+      clientNom:
+          json["client_nom"],
+
+
+      clientTelephone:
+          json["client_telephone"],
+
+
+      adresseLivraison:
+          json["adresse_livraison"],
+
+
+      montantTotal:
+          json["montant_total"] != null
+              ? double.parse(
+                  json["montant_total"].toString(),
+                )
+              : null,
+
 
       livreur:
           json["livreur"],
 
+
       livreurNom:
           json["livreur_nom"],
+
 
       societe:
           json["societe"],
 
+
       statut:
           json["statut"] ?? "",
+
 
       datePrise:
           json["date_prise"] != null
@@ -69,6 +106,7 @@ class Livraison {
                 )
               : null,
 
+
       dateLivraison:
           json["date_livraison"] != null
               ? DateTime.parse(
@@ -76,8 +114,10 @@ class Livraison {
                 )
               : null,
 
+
       confirmeePar:
           json["confirmee_par"],
+
 
       dateConfirmation:
           json["date_confirmation"] != null

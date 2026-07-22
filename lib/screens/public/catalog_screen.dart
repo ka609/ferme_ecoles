@@ -7,6 +7,7 @@ import '../../providers/catalog_provider.dart';
 import '../../providers/categorie_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/panier_article_provider.dart';
+import '../../providers/notification_provider.dart';
 
 import '../../core/routes/app_routes.dart';
 
@@ -114,15 +115,28 @@ class _CatalogScreenState extends State<CatalogScreen> {
           ),
           actions: [
             if (isLogged) ...[
-              IconButton(
-                tooltip: "Notifications",
-                icon: const Icon(
-                  Icons.notifications_outlined,
-                  color: Colors.black87,
-                ),
-                onPressed: () => context.push(
-                  AppRoutes.notifications,
-                ),
+              Consumer<NotificationProvider>(
+                builder: (context, notificationProvider, child) {
+                  final nombre =
+                      notificationProvider.nombreNotificationsNonLues;
+
+                  return Badge(
+                    isLabelVisible: nombre > 0,
+                    label: Text(
+                      nombre.toString(),
+                    ),
+                    child: IconButton(
+                      tooltip: "Notifications",
+                      icon: const Icon(
+                        Icons.notifications_outlined,
+                        color: Colors.black87,
+                      ),
+                      onPressed: () => context.push(
+                        AppRoutes.notifications,
+                      ),
+                    ),
+                  );
+                },
               ),
               IconButton(
                 tooltip: "Forum",
@@ -135,15 +149,24 @@ class _CatalogScreenState extends State<CatalogScreen> {
                 ),
               ),
             ],
-            IconButton(
-              tooltip: "Panier",
-              icon: const Icon(
-                Icons.shopping_cart_outlined,
-                color: Colors.black87,
-              ),
-              onPressed: () => context.push(
-                AppRoutes.panier,
-              ),
+            Consumer<PanierArticleProvider>(
+              builder: (context, panierProvider, child) {
+                return Badge(
+                  label: Text(
+                    panierProvider.nombreArticles.toString(),
+                  ),
+                  child: IconButton(
+                    tooltip: "Panier",
+                    icon: const Icon(
+                      Icons.shopping_cart_outlined,
+                      color: Colors.black87,
+                    ),
+                    onPressed: () => context.push(
+                      AppRoutes.panier,
+                    ),
+                  ),
+                );
+              },
             ),
             const SizedBox(width: 8),
           ],

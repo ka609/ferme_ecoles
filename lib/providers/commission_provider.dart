@@ -1,16 +1,19 @@
 import 'package:flutter/foundation.dart';
 
+import '../models/commission_model.dart';
 import '../services/commission_service.dart';
 
 
 class CommissionProvider extends ChangeNotifier {
 
-  final CommissionService _service = CommissionService();
+  final CommissionService _service =
+      CommissionService();
 
 
-  List<dynamic> _commissions = [];
 
-  Map<String, dynamic>? _commissionDetail;
+  List<Commission> _commissions = [];
+
+  Commission? _commissionDetail;
 
 
   bool _isLoading = false;
@@ -19,15 +22,21 @@ class CommissionProvider extends ChangeNotifier {
 
 
 
-  List<dynamic> get commissions => _commissions;
+  List<Commission> get commissions =>
+      _commissions;
 
-  Map<String, dynamic>? get commissionDetail =>
+
+  Commission? get commissionDetail =>
       _commissionDetail;
 
 
-  bool get isLoading => _isLoading;
 
-  String? get error => _error;
+  bool get isLoading =>
+      _isLoading;
+
+
+  String? get error =>
+      _error;
 
 
 
@@ -39,16 +48,34 @@ class CommissionProvider extends ChangeNotifier {
       _setLoading(true);
 
 
-      _commissions =
+
+      final data =
           await _service.fetchCommissions();
+
+
+
+      _commissions =
+          data
+              .map<Commission>(
+                (json) =>
+                    Commission.fromJson(json),
+              )
+              .toList();
+
 
 
       _error = null;
 
 
+      notifyListeners();
+
+
+
     } catch (e) {
 
       _error = e.toString();
+
+      notifyListeners();
 
 
     } finally {
@@ -58,6 +85,7 @@ class CommissionProvider extends ChangeNotifier {
     }
 
   }
+
 
 
 
@@ -66,23 +94,39 @@ class CommissionProvider extends ChangeNotifier {
     int commissionId,
   ) async {
 
+
     try {
 
       _setLoading(true);
 
 
-      _commissionDetail =
+
+      final data =
           await _service.fetchCommissionDetail(
             commissionId,
           );
 
 
+
+      _commissionDetail =
+          Commission.fromJson(
+            data,
+          );
+
+
+
       _error = null;
+
+
+      notifyListeners();
+
 
 
     } catch (e) {
 
       _error = e.toString();
+
+      notifyListeners();
 
 
     } finally {
@@ -92,6 +136,44 @@ class CommissionProvider extends ChangeNotifier {
     }
 
   }
+
+
+
+
+
+  // Calcul total commissions
+  double get totalCommissions {
+
+    return _commissions.fold<double>(
+      0,
+      (
+        total,
+        commission,
+      ) =>
+          total + commission.montant,
+    );
+
+  }
+
+
+
+
+
+  // Filtrer commissions payées
+  List<Commission> get commissionsPayees {
+
+    return _commissions
+        .where(
+          (commission) =>
+              commission.statut
+                  .toUpperCase() ==
+              "PAYEE",
+        )
+        .toList();
+
+  }
+
+
 
 
 
@@ -108,6 +190,8 @@ class CommissionProvider extends ChangeNotifier {
 
 
 
+
+
   // Nettoyer erreur
   void clearError() {
 
@@ -119,10 +203,12 @@ class CommissionProvider extends ChangeNotifier {
 
 
 
+
+
   // Réinitialiser données
   void clear() {
 
-    _commissions.clear();
+    _commissions = [];
 
     _commissionDetail = null;
 

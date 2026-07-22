@@ -12,21 +12,16 @@ class LivraisonDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<LivraisonDetailScreen> createState() =>
-      _LivraisonDetailScreenState();
+  State<LivraisonDetailScreen> createState() => _LivraisonDetailScreenState();
 }
 
-class _LivraisonDetailScreenState
-    extends State<LivraisonDetailScreen> {
-
+class _LivraisonDetailScreenState extends State<LivraisonDetailScreen> {
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context
-          .read<LivraisonProvider>()
-          .fetchLivraisonDetail(
+      context.read<LivraisonProvider>().fetchLivraisonDetail(
             widget.livraisonId,
           );
     });
@@ -34,9 +29,7 @@ class _LivraisonDetailScreenState
 
   Future<void> _marquerLivree() async {
     final success =
-        await context
-            .read<LivraisonProvider>()
-            .marquerLivraisonEffectuee(
+        await context.read<LivraisonProvider>().marquerLivraisonEffectuee(
               widget.livraisonId,
             );
 
@@ -46,9 +39,53 @@ class _LivraisonDetailScreenState
       SnackBar(
         content: Text(
           success
-              ? "Livraison terminée"
+              ? "Livraison terminée avec succès"
               : "Erreur lors de la livraison",
         ),
+      ),
+    );
+  }
+
+  Widget _infoTile(
+    IconData icon,
+    String title,
+    String value,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            icon,
+            size: 22,
+            color: Colors.green,
+          ),
+          const SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -57,20 +94,19 @@ class _LivraisonDetailScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Détail livraison"),
+        title: const Text(
+          "Détail livraison",
+        ),
       ),
-
       body: Consumer<LivraisonProvider>(
         builder: (context, provider, child) {
-
           if (provider.isLoading) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
 
-          final livraison =
-              provider.livraisonDetail;
+          final livraison = provider.livraisonDetail;
 
           if (livraison == null) {
             return const Center(
@@ -80,113 +116,114 @@ class _LivraisonDetailScreenState
             );
           }
 
-          final commande =
-              livraison["commande"] ?? {};
-
-          final lignes =
-              commande["lignes"] ?? [];
-
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
-
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
-
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
-                Text(
-                  "Commande #${commande["numero"] ?? ""}",
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
+                // En-tête commande
                 Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
-
+                    padding: const EdgeInsets.all(18),
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
-
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
                         Text(
-                          "Client : ${commande["client_nom"] ?? ""}",
+                          livraison.commandeNumero ??
+                              "Commande #${livraison.commande}",
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-
-                        const SizedBox(height: 8),
-
-                        Text(
-                          "Adresse : ${commande["adresse_livraison"] ?? ""}",
+                        const SizedBox(
+                          height: 15,
                         ),
-
-                        const SizedBox(height: 8),
-
-                        Text(
-                          "Statut : ${livraison["statut"] ?? ""}",
+                        _infoTile(
+                          Icons.person_outline,
+                          "Client",
+                          livraison.clientNom ?? "-",
                         ),
-
-                        const SizedBox(height: 8),
-
-                        Text(
-                          "Montant : ${commande["montant_total"] ?? 0} FCFA",
+                        _infoTile(
+                          Icons.phone_outlined,
+                          "Téléphone",
+                          livraison.clientTelephone ?? "-",
+                        ),
+                        _infoTile(
+                          Icons.location_on_outlined,
+                          "Adresse",
+                          livraison.adresseLivraison ?? "-",
+                        ),
+                        _infoTile(
+                          Icons.payments_outlined,
+                          "Montant",
+                          "${livraison.montantTotal ?? 0} FCFA",
                         ),
                       ],
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(
+                  height: 20,
+                ),
 
-                const Text(
-                  "Produits",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                // Statut livraison
+
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.local_shipping_outlined,
+                          color: Colors.green,
+                        ),
+                        const SizedBox(
+                          width: 12,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Statut",
+                              style: TextStyle(
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Text(
+                              livraison.statut,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
 
-                const SizedBox(height: 10),
+                const SizedBox(
+                  height: 25,
+                ),
 
-                ...lignes.map((ligne) {
-
-                  return Card(
-                    child: ListTile(
-                      title: Text(
-                        ligne["produit_nom"] ?? "",
-                      ),
-
-                      subtitle: Text(
-                        "Quantité : ${ligne["quantite"] ?? 0}",
-                      ),
-
-                      trailing: Text(
-                        "${ligne["sous_total"] ?? 0} FCFA",
-                      ),
-                    ),
-                  );
-
-                }),
-
-                const SizedBox(height: 24),
-
-                if (
-                  livraison["statut"]
-                      .toString()
-                      .toUpperCase() == "EN_COURS"
-                )
+                if (livraison.statut.toUpperCase() == "EN_COURS")
                   SizedBox(
                     width: double.infinity,
-
-                    child: ElevatedButton(
+                    child: ElevatedButton.icon(
+                      icon: const Icon(
+                        Icons.check_circle_outline,
+                      ),
                       onPressed: _marquerLivree,
-
-                      child: const Text(
+                      label: const Text(
                         "Marquer comme livrée",
                       ),
                     ),

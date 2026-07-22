@@ -132,5 +132,6 @@ static String avisProduitPath(int id) {
 }
 
 static const versements = "/versements";
+static const String commissions = "/commissions";
 
 }

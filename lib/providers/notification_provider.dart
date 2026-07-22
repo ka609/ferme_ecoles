@@ -3,235 +3,99 @@ import 'package:flutter/foundation.dart';
 import '../models/notification_model.dart';
 import '../services/notification_service.dart';
 
-
-
 class NotificationProvider extends ChangeNotifier {
-
-
-  final NotificationService _service =
-      NotificationService();
-
-
+  final NotificationService _service = NotificationService();
 
   List<NotificationModel> _notifications = [];
 
-
-
   bool _isLoading = false;
-
 
   String? _error;
 
+  List<NotificationModel> get notifications => _notifications;
 
+  bool get isLoading => _isLoading;
 
-
-
-  List<NotificationModel> get notifications =>
-      _notifications;
-
-
-
-  bool get isLoading =>
-      _isLoading;
-
-
-
-  String? get error =>
-      _error;
-
-
-
-
-
+  String? get error => _error;
 
   // Charger notifications
   Future<void> fetchNotifications() async {
-
-
     try {
-
-
       _setLoading(true);
 
-
-
-      final data =
-          await _service.fetchNotifications();
-
-
-
+      final data = await _service.fetchNotifications();
 
       _notifications = data
           .map<NotificationModel>(
-            (json) =>
-                NotificationModel.fromJson(json),
+            (json) => NotificationModel.fromJson(json),
           )
           .toList();
 
-
-
       _error = null;
-
-
-
-
     } catch (e) {
-
-
       _error = e.toString();
-
-
-
     } finally {
-
-
       _setLoading(false);
-
-
     }
-
   }
-
-
-
-
-
-
 
   // Lire notification
   Future<bool> readNotification(
-
     int id,
-
   ) async {
-
-
     try {
-
-
-
       await _service.readNotification(
         id,
       );
 
+      final index = _notifications.indexWhere(
+        (item) => item.id == id,
+      );
 
-
-
-      final index =
-          _notifications.indexWhere(
-
-            (item) =>
-                item.id == id,
-
-          );
-
-
-
-
-      if(index != -1){
-
-
-        _notifications[index] =
-            _notifications[index].copyWith(
-              lu: true,
-            );
-
-
+      if (index != -1) {
+        _notifications[index] = _notifications[index].copyWith(
+          lu: true,
+        );
       }
-
-
-
 
       notifyListeners();
 
-
-
       return true;
-
-
-
-
-    } catch(e){
-
-
-
+    } catch (e) {
       _error = e.toString();
 
-
       return false;
-
-
-
     }
-
   }
 
+  // Nombre de notifications non lues
 
-
-
-
-
-
+  int get nombreNotificationsNonLues {
+    return _notifications.where((notification) => !notification.lu).length;
+  }
 
   // Mise à jour chargement
   void _setLoading(
-
     bool value,
-
-  ){
-
-
+  ) {
     _isLoading = value;
 
-
     notifyListeners();
-
-
   }
-
-
-
-
-
-
-
 
   // Nettoyer erreur
-  void clearError(){
-
-
+  void clearError() {
     _error = null;
 
-
     notifyListeners();
-
-
   }
-
-
-
-
-
-
-
 
   // Réinitialiser données
-  void clear(){
-
-
-
+  void clear() {
     _notifications = [];
-
-
 
     _error = null;
 
-
-
     notifyListeners();
-
-
   }
-
-
 }

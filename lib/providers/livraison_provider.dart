@@ -1,374 +1,216 @@
 import 'package:flutter/foundation.dart';
 
+import '../models/livraison_model.dart';
 import '../services/livraison_service.dart';
 
-
 class LivraisonProvider extends ChangeNotifier {
+  final LivraisonService _service = LivraisonService();
 
-  final LivraisonService _service =
-      LivraisonService();
+  List<Livraison> _livraisons = [];
 
+  List<Livraison> _livraisonsDisponibles = [];
 
-
-  List<dynamic> _livraisons = [];
-
-  List<dynamic> _livraisonsDisponibles = [];
-
-
-  Map<String, dynamic>? _livraisonDetail;
-
+  Livraison? _livraisonDetail;
 
   bool _isLoading = false;
 
   String? _error;
 
+  List<Livraison> get livraisons => _livraisons;
 
+  List<Livraison> get livraisonsDisponibles => _livraisonsDisponibles;
 
-  List<dynamic> get livraisons =>
-      _livraisons;
+  Livraison? get livraisonDetail => _livraisonDetail;
 
+  bool get isLoading => _isLoading;
 
-  List<dynamic> get livraisonsDisponibles =>
-      _livraisonsDisponibles;
+  String? get error => _error;
 
-
-  Map<String, dynamic>? get livraisonDetail =>
-      _livraisonDetail;
-
-
-  bool get isLoading =>
-      _isLoading;
-
-
-  String? get error =>
-      _error;
-
-
-
-  // Charger livraisons
+  // Charger toutes les livraisons
   Future<void> fetchLivraisons() async {
-
     try {
-
       _setLoading(true);
 
-
-      _livraisons =
-          await _service.fetchLivraisons();
-
+      _livraisons = await _service.fetchLivraisons();
 
       _error = null;
-
-
     } catch (e) {
-
       _error = e.toString();
-
-
     } finally {
-
       _setLoading(false);
-
     }
-
   }
 
-
-
-  // Charger livraisons disponibles
+  // Charger les livraisons disponibles
   Future<void> fetchLivraisonsDisponibles() async {
-
     try {
-
       _setLoading(true);
 
-
-      _livraisonsDisponibles =
-          await _service.fetchLivraisonsDisponibles();
-
+      _livraisonsDisponibles = await _service.fetchLivraisonsDisponibles();
 
       _error = null;
-
-
     } catch (e) {
-
       _error = e.toString();
-
-
     } finally {
-
       _setLoading(false);
-
     }
-
   }
 
-
-
-  // Charger détail livraison
+  // Charger une livraison
   Future<void> fetchLivraisonDetail(
     int livraisonId,
   ) async {
-
     try {
-
       _setLoading(true);
 
-
-      _livraisonDetail =
-          await _service.fetchLivraisonDetail(
-            livraisonId,
-          );
-
-
-      _error = null;
-
-
-    } catch (e) {
-
-      _error = e.toString();
-
-
-    } finally {
-
-      _setLoading(false);
-
-    }
-
-  }
-
-
-
-  // Prendre livraison
-  Future<bool> prendreLivraison(
-    int livraisonId,
-  ) async {
-
-    try {
-
-      _setLoading(true);
-
-
-      final livraison =
-          await _service.prendreLivraison(
-            livraisonId,
-          );
-
-
-      _updateLivraison(
-        livraison,
+      _livraisonDetail = await _service.fetchLivraisonDetail(
+        livraisonId,
       );
 
-
-      return true;
-
-
+      _error = null;
     } catch (e) {
-
       _error = e.toString();
-
-      return false;
-
-
     } finally {
-
       _setLoading(false);
-
     }
-
   }
 
+  // Prendre une livraison
+  Future<Livraison?> prendreLivraison(
+    int livraisonId,
+  ) async {
+    try {
+      _setLoading(true);
 
+      final livraison = await _service.prendreLivraison(
+        livraisonId,
+      );
 
-  // Relâcher livraison
+      _updateLivraison(livraison);
+
+      return livraison;
+    } catch (e) {
+      _error = e.toString();
+      return null;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  // Relâcher une livraison
   Future<bool> relacherLivraison(
     int livraisonId,
   ) async {
-
     try {
-
       _setLoading(true);
 
-
-      final livraison =
-          await _service.relacherLivraison(
-            livraisonId,
-          );
-
-
-      _updateLivraison(
-        livraison,
+      final livraison = await _service.relacherLivraison(
+        livraisonId,
       );
 
+      _updateLivraison(livraison);
 
       return true;
-
-
     } catch (e) {
-
       _error = e.toString();
-
       return false;
-
-
     } finally {
-
       _setLoading(false);
-
     }
-
   }
 
-
-
-  // Marquer livrée
+  // Marquer comme livrée
   Future<bool> marquerLivraisonEffectuee(
     int livraisonId,
   ) async {
-
     try {
-
       _setLoading(true);
 
-
-      final livraison =
-          await _service.marquerLivraisonEffectuee(
-            livraisonId,
-          );
-
-
-      _updateLivraison(
-        livraison,
+      final livraison = await _service.marquerLivraisonEffectuee(
+        livraisonId,
       );
 
+      _updateLivraison(livraison);
 
       return true;
-
-
     } catch (e) {
-
       _error = e.toString();
-
       return false;
-
-
     } finally {
-
       _setLoading(false);
-
     }
-
   }
 
-
-
-  // Confirmer réception
+// Confirmer la réception
   Future<bool> confirmerReception(
     int livraisonId,
   ) async {
-
     try {
-
       _setLoading(true);
 
-
-      final livraison =
-          await _service.confirmerReception(
-            livraisonId,
-          );
-
+      final livraison = await _service.confirmerReception(
+        livraisonId,
+      );
 
       _updateLivraison(
         livraison,
       );
 
-
       return true;
-
-
     } catch (e) {
-
       _error = e.toString();
 
+      debugPrint(
+        "Erreur confirmation réception : $e",
+      );
+
       return false;
-
-
     } finally {
-
       _setLoading(false);
-
     }
-
   }
 
-
-
-  // Mettre à jour livraison
+  // Mettre à jour une livraison
   void _updateLivraison(
-    Map<String, dynamic> livraison,
+    Livraison livraison,
   ) {
-
-    final index =
-        _livraisons.indexWhere(
-          (item) =>
-              item["id"] == livraison["id"],
-        );
-
+    final index = _livraisons.indexWhere(
+      (item) => item.id == livraison.id,
+    );
 
     if (index != -1) {
-
       _livraisons[index] = livraison;
-
     }
 
+    final disponibleIndex = _livraisonsDisponibles.indexWhere(
+      (item) => item.id == livraison.id,
+    );
+
+    if (disponibleIndex != -1) {
+      _livraisonsDisponibles[disponibleIndex] = livraison;
+    }
 
     _livraisonDetail = livraison;
 
-
     notifyListeners();
-
   }
 
-
-
-  // Mise à jour chargement
-  void _setLoading(
-    bool value,
-  ) {
-
+  void _setLoading(bool value) {
     _isLoading = value;
-
     notifyListeners();
-
   }
 
-
-
-  // Nettoyer erreur
   void clearError() {
-
     _error = null;
-
     notifyListeners();
-
   }
 
-
-
-  // Réinitialiser données
   void clear() {
-
     _livraisons.clear();
-
     _livraisonsDisponibles.clear();
-
     _livraisonDetail = null;
-
     _error = null;
 
-
     notifyListeners();
-
   }
-
 }

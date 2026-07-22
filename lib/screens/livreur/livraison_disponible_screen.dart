@@ -5,15 +5,16 @@ import '../../providers/livraison_provider.dart';
 
 
 class LivraisonDisponibleScreen extends StatefulWidget {
-
   const LivraisonDisponibleScreen({
     super.key,
   });
+
 
   @override
   State<LivraisonDisponibleScreen> createState() =>
       _LivraisonDisponibleScreenState();
 }
+
 
 
 class _LivraisonDisponibleScreenState
@@ -22,18 +23,15 @@ class _LivraisonDisponibleScreenState
 
   @override
   void initState() {
-
     super.initState();
 
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
 
       context
           .read<LivraisonProvider>()
           .fetchLivraisonsDisponibles();
 
     });
-
   }
 
 
@@ -42,8 +40,7 @@ class _LivraisonDisponibleScreenState
     int livraisonId,
   ) async {
 
-
-    final success =
+    final livraison =
         await context
             .read<LivraisonProvider>()
             .prendreLivraison(
@@ -59,13 +56,154 @@ class _LivraisonDisponibleScreenState
 
       SnackBar(
 
+        behavior:
+            SnackBarBehavior.floating,
+
         content: Text(
 
-          success
+          livraison != null
 
-              ? "Livraison prise en charge"
+              ? "Livraison prise en charge."
 
-              : "Impossible de prendre cette livraison",
+              : "Impossible de prendre cette livraison.",
+
+        ),
+
+      ),
+
+    );
+  }
+
+
+
+  Widget _infoRow(
+    IconData icon,
+    String label,
+    String value,
+  ) {
+
+    return Padding(
+
+      padding:
+          const EdgeInsets.only(
+            bottom: 10,
+          ),
+
+      child: Row(
+
+        crossAxisAlignment:
+            CrossAxisAlignment.start,
+
+
+        children: [
+
+          Icon(
+            icon,
+            size: 20,
+            color:
+                Colors.green.shade700,
+          ),
+
+
+          const SizedBox(
+            width: 10,
+          ),
+
+
+          Expanded(
+
+            child: RichText(
+
+              text:
+                  TextSpan(
+
+                style:
+                    const TextStyle(
+                      color:
+                          Colors.black87,
+                      fontSize: 14,
+                    ),
+
+                children: [
+
+                  TextSpan(
+
+                    text:
+                        "$label : ",
+
+                    style:
+                        const TextStyle(
+                          fontWeight:
+                              FontWeight.bold,
+                        ),
+
+                  ),
+
+                  TextSpan(
+                    text:
+                        value,
+                  ),
+
+                ],
+
+              ),
+
+            ),
+
+          ),
+
+        ],
+
+      ),
+
+    );
+  }
+
+
+
+
+
+  Widget _statusBadge(
+    String statut,
+  ) {
+
+    return Container(
+
+      padding:
+          const EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: 6,
+          ),
+
+
+      decoration:
+          BoxDecoration(
+
+        color:
+            Colors.orange.shade100,
+
+        borderRadius:
+            BorderRadius.circular(20),
+
+      ),
+
+
+      child:
+          Text(
+
+        statut,
+
+        style:
+            TextStyle(
+
+          color:
+              Colors.orange.shade800,
+
+          fontWeight:
+              FontWeight.bold,
+
+          fontSize:
+              12,
 
         ),
 
@@ -77,98 +215,155 @@ class _LivraisonDisponibleScreenState
 
 
 
+
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
 
-      appBar: AppBar(
+      appBar:
+          AppBar(
 
-        title: const Text(
+        title:
+            const Text(
           "Livraisons disponibles",
         ),
 
       ),
 
 
-      body: RefreshIndicator(
 
-        onRefresh: () async {
+      body:
+          Consumer<LivraisonProvider>(
 
-          await context
-              .read<LivraisonProvider>()
-              .fetchLivraisonsDisponibles();
-
-        },
-
-
-        child: Consumer<LivraisonProvider>(
-
-          builder:
-              (context, provider, child) {
+        builder:
+            (
+              context,
+              provider,
+              child,
+            ) {
 
 
-            if (provider.isLoading) {
+          if (provider.isLoading) {
 
-              return const Center(
+            return const Center(
 
-                child:
-                    CircularProgressIndicator(),
+              child:
+                  CircularProgressIndicator(),
 
-              );
+            );
 
-            }
+          }
 
 
 
-            if (provider.livraisonsDisponibles.isEmpty) {
+          if (provider.livraisonsDisponibles.isEmpty) {
 
-              return const Center(
+            return RefreshIndicator(
 
-                child: Text(
-                  "Aucune livraison disponible",
-                ),
-
-              );
-
-            }
+              onRefresh:
+                  () =>
+                      provider
+                          .fetchLivraisonsDisponibles(),
 
 
+              child:
+                  ListView(
 
-            return ListView.builder(
+                children: const [
+
+                  SizedBox(
+                    height: 250,
+                  ),
+
+                  Center(
+
+                    child:
+                        Text(
+                      "Aucune livraison disponible.",
+                    ),
+
+                  ),
+
+                ],
+
+              ),
+
+            );
+
+          }
+
+
+
+
+          return RefreshIndicator(
+
+            onRefresh:
+                () =>
+                    provider
+                        .fetchLivraisonsDisponibles(),
+
+
+
+            child:
+                ListView.builder(
 
               padding:
                   const EdgeInsets.all(16),
 
 
               itemCount:
-                  provider.livraisonsDisponibles.length,
+                  provider
+                      .livraisonsDisponibles
+                      .length,
+
 
 
               itemBuilder:
-                  (context, index) {
+                  (
+                    context,
+                    index,
+                  ) {
 
 
                 final livraison =
-                    provider.livraisonsDisponibles[index];
+                    provider
+                        .livraisonsDisponibles[index];
 
 
 
                 return Card(
 
+                  elevation:
+                      3,
+
+
                   margin:
                       const EdgeInsets.only(
-                        bottom: 12,
+                        bottom: 16,
                       ),
 
 
-                  child: Padding(
+                  shape:
+                      RoundedRectangleBorder(
+
+                    borderRadius:
+                        BorderRadius.circular(18),
+
+                  ),
+
+
+
+                  child:
+                      Padding(
 
                     padding:
-                        const EdgeInsets.all(16),
+                        const EdgeInsets.all(18),
 
 
-                    child: Column(
+
+                    child:
+                        Column(
 
                       crossAxisAlignment:
                           CrossAxisAlignment.start,
@@ -177,46 +372,104 @@ class _LivraisonDisponibleScreenState
                       children: [
 
 
-                        Text(
 
-                          "Commande #${livraison.commande.numero}",
+                        Row(
 
-                          style:
-                              const TextStyle(
-                                fontWeight:
-                                    FontWeight.bold,
-                                fontSize: 16,
+                          mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
+
+
+                          children: [
+
+
+                            Expanded(
+
+                              child:
+                                  Text(
+
+                                livraison.commandeNumero ??
+                                    "Commande #${livraison.commande}",
+
+
+                                style:
+                                    const TextStyle(
+
+                                  fontSize:
+                                      18,
+
+                                  fontWeight:
+                                      FontWeight.bold,
+
+                                ),
+
                               ),
 
-                        ),
+                            ),
 
 
 
-                        const SizedBox(
-                          height: 8,
-                        ),
+                            _statusBadge(
+                              livraison.statut,
+                            ),
 
-
-
-                        Text(
-
-                          "Client : ${livraison.commande.clientNom ?? ""}",
+                          ],
 
                         ),
 
 
 
-                        Text(
+                        const Divider(
+                          height: 24,
+                        ),
 
-                          "Adresse : ${livraison.commande.adresseLivraison}",
+
+
+                        _infoRow(
+
+                          Icons.person_outline,
+
+                          "Client",
+
+                          livraison.clientNom ??
+                              "-",
 
                         ),
 
 
 
-                        Text(
+                        _infoRow(
 
-                          "Montant : ${livraison.commande.montantTotal} FCFA",
+                          Icons.phone_outlined,
+
+                          "Téléphone",
+
+                          livraison.clientTelephone ??
+                              "-",
+
+                        ),
+
+
+
+                        _infoRow(
+
+                          Icons.location_on_outlined,
+
+                          "Adresse",
+
+                          livraison.adresseLivraison ??
+                              "-",
+
+                        ),
+
+
+
+                        _infoRow(
+
+                          Icons.payments_outlined,
+
+                          "Montant",
+
+                          "${livraison.montantTotal ?? 0} FCFA",
 
                         ),
 
@@ -235,21 +488,25 @@ class _LivraisonDisponibleScreenState
 
 
                           child:
-                              ElevatedButton(
+                              ElevatedButton.icon(
 
-                            onPressed: () {
-
-                              _prendreLivraison(
-                                livraison.id,
-                              );
-
-                            },
+                            onPressed:
+                                () =>
+                                    _prendreLivraison(
+                                      livraison.id,
+                                    ),
 
 
-                            child:
+                            icon:
+                                const Icon(
+                              Icons.local_shipping_outlined,
+                            ),
+
+
+                            label:
                                 const Text(
-                                  "Prendre en charge",
-                                ),
+                              "Prendre en charge",
+                            ),
 
                           ),
 
@@ -265,16 +522,15 @@ class _LivraisonDisponibleScreenState
 
               },
 
-            );
+            ),
 
-          },
+          );
 
-        ),
+        },
 
       ),
 
     );
 
   }
-
 }
